@@ -18,6 +18,7 @@
 * Testing significance
 	* We can transform r into a t-statistic (in order to perform a Hypothesis Test) as follows:
 		* `t = r * sqrt(N-2) / sqrt(1-r^2)`
+		* in R, use `lm.beta()` from the R package
 	* of course, you can just use `cor.test` in R
 * "Bivariate Correlation" - doesn't account for the effect of additional variables
 
@@ -65,6 +66,10 @@
 * Mean Sum of Squared Error from the Regression Model / Mean Sum of Squared Error from the Mean
 * Close to 0 means the model is very good, Close to 1 means the model is no better than just guessing the mean every time
 
+## In R?
+* you can get R^2, Adjusted R^2, the F-Ratio, and the p-value of a model using the `summary()` function in R
+* you can compare multiple models using `anova()`
+
 ## Partial Correlation
 * accounts for the effects of additional variables, unlike Bivariate Correlation
 * does a better job of measuring two variables' relationship by holding the other variables constant
@@ -85,20 +90,25 @@
 	* transform data to create linear relations that satisfy regression assumptions
 
 ## Outliers
-* standardize your data points (Subtract mean(y), Divide sd(y)) to convert to z-scores
+* standardize your data points' residuals (Subtract mean(resid), Divide sd(resid)) to convert to z-scores
+	* `rstandardize()`
 * 99.9% of data should lie within z=[-3.29, 3.29], so values outside of this range are most likely extreme outliers or errors
 * less than 1% of data should lie outside of z=[-2.58, 2.58], and less than 5% of data should lie outside of z=[-1.96, 1.96] - more than this, and your model is probably a poor fit for your data
 
 ## Influential Points
 * points that have an unusually large influence on the model's form
 * either are outliers, or have large leverage (meaning their x-values are far away from the x-values of other points)
+	* find leverage with `hatvalues()`
 * Ways to Identify
-	* Standardized Residual = `DFFit(x) / StandardError`
+	* Studentized Residual = `DFFit(x) / StandardError`
 		* where DFFit is the difference in the prediction of x between the model that includes x and the model that does not include x
+			* `dffits()`
 		* only measures how much a point influences its own prediction
+		* `rstudent()`
 	* Cook's Distance
 		* measures how much a point influences all predictions
 		* if Cook's Distance > 1, it is probably an influential point
+		* `cooks.distance()`
 
 ## Methods of Regression
 * Hierarchical
@@ -124,18 +134,25 @@
 	* Because of this, some people prefer Hierarchical and Forced Entry
 
 ## Regression Assumptions
-* No Multicollinarity
+* No Multicollinearity
 	* the predictors do not correlate with each other
 	* test this assumption by...
 		* creating a correlation matrix on the predictors (ballpark method)
 		* checking if the Variance Inflation Factor is high (smarter method)
 			* >10 is definitely multicollinear, >5 is cause for concern
+			* `vif()`
 	* the variance of the predicted variable should be constant w.r.t. the predictor variables
-* Errors are Normally Distributed and Independent
+* Errors are Normally Distributed, Independent, and have Homoscedasity
 	* No Autocorrelation = the errors of one observation should not influence the errors of the next observation
 	* test this assumption with the Durbin-Watson Test (test stat = 2 means no correlation, 0 means positive, 4 means negative)
 		* order matters - you must keep the data in the original order for Durbin-Watson to be useful
+		* `durbinWatsonTest()`
+	* Plotting
+		* test Homoscedasity by plotting fitted values vs residuals with `plot()`
+		* test Normality of Errors by plotting residuals with `hist()` and `qqnorm()`
 
 ## Rules of Thumb - How Many Observations Do I Need?
 * To Test the Overall Fit of Your Regression Model: `50 + 8 * (# variables)``
 * To Test the Predictors: `104 + (# of variables)`
+
+## Robust Regression
