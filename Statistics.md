@@ -33,18 +33,37 @@
 		* compute with `polyserial()` in R
 		* not supported by `cor.test()`, so you have to program the hypothesis test yourself
 
-
-## Coefficient of Determination R^2
-* proportion of y's variability is shared by x
-* increases the more variables you throw in the model, which can falsely reward models with lots of variables
-
-#### Adjusted Coefficient of Determination
-* penalizes R^2 for points that don't fit the model
-
 ## Spearman Correlation Coefficient
 * nonparametric - useful alternative to Pearson's if your data violates parametric assumptions
 * measures the strength of a monotonic relation, rather than a linear relation
 * as with Pearson's, use `cor.test` to test significance
+
+## Coefficient of Determination R^2
+* proportion of y's variability that is shared by x = square of the correlation between the observed and predicted y's
+* `R^2 = SS_T - SS_M / SS_T`
+	* where SS_T is the sum of squared residuals from the mean and SS_R is the sum of squared residuals from the regression line
+	* computed differently for single regression and multiple regression
+* increases with every variable you throw in the model, which can falsely reward models with lots of useless variables
+
+### Ways to Penalize for Having Too Many Useless Variables
+* we want to minimize both SSE and # of variables
+
+#### Adjusted Coefficient of Determination
+* can be used as a stand-alone measure, trained on different datasets
+* `Adjusted R^2 = 1 - (1-R^2)*(n-1)/(n-p-1)`
+
+#### Akaike Information Criterion (AIC)
+* `AIC = n*ln(SSE/n) + 2k` where k is the # of variables
+
+#### Bayesian Information Criterion (BIC)
+* `BIC = k*ln(n) + 2*ln(L)`
+	* where L is the max value of the model's likelihood function
+* both AIC and BIC can't be used as a stand-alone measure - can only be used to compare two models with the same data
+
+## F-Ratio
+* ratio of variability the model can't explain vs variability the model can explain
+* Mean Sum of Squared Error from the Regression Model / Mean Sum of Squared Error from the Mean
+* Close to 0 means the model is very good, Close to 1 means the model is no better than just guessing the mean every time
 
 ## Partial Correlation
 * accounts for the effects of additional variables, unlike Bivariate Correlation
@@ -61,3 +80,62 @@
 
 
 # Regression
+* prior to creating regression models, it's a good idea to...
+	* identify outliers and influential points, and perhaps exclude them **if** *you have a good reason to do so*
+	* transform data to create linear relations that satisfy regression assumptions
+
+## Outliers
+* standardize your data points (Subtract mean(y), Divide sd(y)) to convert to z-scores
+* 99.9% of data should lie within z=[-3.29, 3.29], so values outside of this range are most likely extreme outliers or errors
+* less than 1% of data should lie outside of z=[-2.58, 2.58], and less than 5% of data should lie outside of z=[-1.96, 1.96] - more than this, and your model is probably a poor fit for your data
+
+## Influential Points
+* points that have an unusually large influence on the model's form
+* either are outliers, or have large leverage (meaning their x-values are far away from the x-values of other points)
+* Ways to Identify
+	* Standardized Residual = `DFFit(x) / StandardError`
+		* where DFFit is the difference in the prediction of x between the model that includes x and the model that does not include x
+		* only measures how much a point influences its own prediction
+	* Cook's Distance
+		* measures how much a point influences all predictions
+		* if Cook's Distance > 1, it is probably an influential point
+
+## Methods of Regression
+* Hierarchical
+	* add known predictors (those that have worked well in the past) first, before adding new predictors (those you are testing)
+* Forced Entry
+	* add everything simultaneously
+* Stepwise Methods
+	* forward
+		* start with nothing, and greedily add predictors to optimize performance
+	* backward
+		* start with everything, and greedily remove predictors to optimize performance
+		* typically considered better than forward stepwise regression because ___
+	* because Stepwie is greedy, they're not guaranteed to give the best performance
+* All-Subsets Method
+	* from all potential subsets of predictors, choose the one that optimizes performance
+		* unlike Stepwise, All-Subsets IS guaranteed to give the best performance
+	* the most "complete", but also takes the most amount of time
+
+#### How to Choose a Method?
+* add variables in order of importance
+	* determine "importance" by the prevalence of previous literature and prior beliefs
+* Stepwise and All-Subsets are vulnerable to random sample variation, so they may not always give the same regression models
+	* Because of this, some people prefer Hierarchical and Forced Entry
+
+## Regression Assumptions
+* No Multicollinarity
+	* the predictors do not correlate with each other
+	* test this assumption by...
+		* creating a correlation matrix on the predictors (ballpark method)
+		* checking if the Variance Inflation Factor is high (smarter method)
+			* >10 is definitely multicollinear, >5 is cause for concern
+	* the variance of the predicted variable should be constant w.r.t. the predictor variables
+* Errors are Normally Distributed and Independent
+	* No Autocorrelation = the errors of one observation should not influence the errors of the next observation
+	* test this assumption with the Durbin-Watson Test (test stat = 2 means no correlation, 0 means positive, 4 means negative)
+		* order matters - you must keep the data in the original order for Durbin-Watson to be useful
+
+## Rules of Thumb - How Many Observations Do I Need?
+* To Test the Overall Fit of Your Regression Model: `50 + 8 * (# variables)``
+* To Test the Predictors: `104 + (# of variables)`
