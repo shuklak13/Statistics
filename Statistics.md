@@ -86,8 +86,9 @@
 
 # Regression
 * prior to creating regression models, it's a good idea to...
-	* identify outliers and influential points, and perhaps exclude them **if** *you have a good reason to do so*
+	* identify outliers and influential points, and perhaps exclude them **if** *they can be determined to be data entry errors or from a different population than the rest of the sample*
 	* transform data to create linear relations that satisfy regression assumptions
+* remember - if you have multiple models that seem equally valid but give different conclusions, then your data is insufficient to answer your question unambiguously
 
 ## Outliers
 * standardize your data points' residuals (Subtract mean(resid), Divide sd(resid)) to convert to z-scores
@@ -97,7 +98,7 @@
 
 ## Influential Points
 * points that have an unusually large influence on the model's form
-* either are outliers, or have large leverage (meaning their x-values are far away from the x-values of other points)
+* either are outliers, or have large leverage (meaning their x-values are far away from the mean x-values)
 	* find leverage with `hatvalues()`
 * Ways to Identify
 	* Studentized Residual = `DFFit(x) / StandardError`
@@ -121,11 +122,13 @@
 	* backward
 		* start with everything, and greedily remove predictors to optimize performance
 		* typically considered better than forward stepwise regression because ___
-	* because Stepwie is greedy, they're not guaranteed to give the best performance
+	* because Stepwise is greedy, they're not guaranteed to give the best performance
+	* `step()` from the stats package
 * All-Subsets Method
 	* from all potential subsets of predictors, choose the one that optimizes performance
 		* unlike Stepwise, All-Subsets IS guaranteed to give the best performance
 	* the most "complete", but also takes the most amount of time
+	* `leaps()` from the leaps package
 
 #### How to Choose a Method?
 * add variables in order of importance
@@ -156,3 +159,23 @@
 * To Test the Predictors: `104 + (# of variables)`
 
 ## Robust Regression
+* an alternative to Ordinary Least Squares Regression - you would use this if your assumptions are incorrect
+* M-Estimation
+ 	* you have outliers in your data that you can't remove
+	* M-Estimation "weights" data based on how nicely-behaved it is, so that points with higher residuals have a smaller impact on the regression line
+	* `rlm` from the MASS package
+* [Sandwich, Meat, and Bread](https://cran.r-project.org/web/packages/sandwich/index.html)
+	* the variance of your residuals is not constant (Heteroscedasity)
+* Bootstrapping
+	* the variance of your residuals is not constant (Heteroscedasity)
+	* you have outliers in your data that you can't remove
+
+## Contrast
+* a set of variables whose coefficients add up to zero
+* usually a set of dummy variables that correspond to a single categorical variable
+* use `contrasts(data$variable)` to set the contrasts for a categorical variable
+* if you do regression on categorical data, R will automatically set the contrast for you
+
+# Logistic Regression
+* categorical y breaks the assumption that there is a linear relation between x and y, so we can't use the Linear Regression equation `y = a + bx`
+	* use MLE to find coefficients
