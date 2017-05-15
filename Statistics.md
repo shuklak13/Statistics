@@ -89,6 +89,7 @@
 	* identify outliers and influential points, and perhaps exclude them **if** *they can be determined to be data entry errors or from a different population than the rest of the sample*
 	* transform data to create linear relations that satisfy regression assumptions
 * remember - if you have multiple models that seem equally valid but give different conclusions, then your data is insufficient to answer your question unambiguously
+* the significance of individual predictors can be measured via T-test
 
 ## Outliers
 * standardize your data points' residuals (Subtract mean(resid), Divide sd(resid)) to convert to z-scores
@@ -121,8 +122,9 @@
 		* start with nothing, and greedily add predictors to optimize performance
 	* backward
 		* start with everything, and greedily remove predictors to optimize performance
-		* typically considered better than forward stepwise regression because ___
-	* because Stepwise is greedy, they're not guaranteed to give the best performance
+		* typically considered better than forward stepwise regression because forward stepwise regression may exclude predictors with suppressor effects (significant, but only when another variable is held constant)
+	* because Stepwise is greedy, they're not guaranteed to give the best performance, but it can give you a reasonably fine-tuned model in a reasonable amount of time
+	* you can also step both ways (every time you remove an element, see if you can add one) which generally performs better
 	* `step()` from the stats package
 * All-Subsets Method
 	* from all potential subsets of predictors, choose the one that optimizes performance
@@ -174,8 +176,41 @@
 * a set of variables whose coefficients add up to zero
 * usually a set of dummy variables that correspond to a single categorical variable
 * use `contrasts(data$variable)` to set the contrasts for a categorical variable
+* use `relevel(data$variable, "baseline")` lets you reassign the baseline value of a categorical variable
 * if you do regression on categorical data, R will automatically set the contrast for you
 
 # Logistic Regression
 * categorical y breaks the assumption that there is a linear relation between x and y, so we can't use the Linear Regression equation `y = a + bx`
 	* use MLE to find coefficients
+* `glm(family = binomial())` from the mlogit package
+	* if you forget to specify the family is binomial, `glm()` will default to Gaussian (linear regression)
+* can actually have more than 2 output categories (multinomial logistic regression) though traditionally we think of binomial logistic regression
+	* `multinom()` from the nnet package
+
+## Assumptions and Things to Check
+* linearity between the predictors `x` and the logit `1 / (1+e^-(a+bx))`
+* errors are independent
+* predictors are not highly correlated
+	* as with Lienar Regression, check this using VIF
+* every combination of values for categorical predictors should appear at least once, and ideally more than five times
+* the output does not have complete separation (there should be some points with the same x-values but different y-values)
+
+## Evaluating the Model
+* `Log-Likelihood = Sum((Y_i)ln(P(Y_i)) + (1-Y_i)ln(1-P(Y_i)))`
+	* analogous to residual sum of squared errors in Linear Regression
+	* greater Log-Likelihood => better model
+	* `deviance = -2LL = -2 * Log-Likelihood`
+	* `Likelihood Ratio = -2LL(model) = 2LL(new) - 2LL(baseline)`
+		* where "baseline" is just guessing the most common category every time
+		* follows a Chi^2 distribution
+	* `Pseudo R^2 = -2LL(model) / -2LL(baseline) = (2LL(new) - 2LL(baseline))/-2LL(baseline)`
+		* This is the Hosmer and Lemeshow Pseudo R^2 metric - there are many others
+		* Logistic Regression, unlike Linear Regression, does not have a "true" R^2. The Pseudo R^2's are just convenient metrics with approximately the same meaning.
+	* `AIC = -2LL + 2k`
+	* `BIC = -2LL + 2k*log(n)`
+
+## Evaluating Individual Predictors
+* Z-test (unlike Linear Regression, which uses the T-test)
+* `Odds Ratio = Odds after Unit Change in Predictor / Original Odds`
+	* where `Odds = P(Yes)/P(No)`
+	* under Logistic Regression, `P(Yes) = 1 / (1+e^-(a+bx))`
