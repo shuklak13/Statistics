@@ -91,26 +91,48 @@
 * remember - if you have multiple models that seem equally valid but give different conclusions, then your data is insufficient to answer your question unambiguously
 * the significance of individual predictors can be measured via T-test
 
-## Outliers
-* standardize your data points' residuals (Subtract mean(resid), Divide sd(resid)) to convert to z-scores
-	* `rstandardize()`
-* 99.9% of data should lie within z=[-3.29, 3.29], so values outside of this range are most likely extreme outliers or errors
-* less than 1% of data should lie outside of z=[-2.58, 2.58], and less than 5% of data should lie outside of z=[-1.96, 1.96] - more than this, and your model is probably a poor fit for your data
-
-## Influential Points
-* points that have an unusually large influence on the model's form
-* either are outliers, or have large leverage (meaning their x-values are far away from the mean x-values)
-	* find leverage with `hatvalues()`
-* Ways to Identify
-	* Studentized Residual = `DFFit(x) / StandardError`
-		* where DFFit is the difference in the prediction of x between the model that includes x and the model that does not include x
-			* `dffits()`
-		* only measures how much a point influences its own prediction
-		* `rstudent()`
-	* Cook's Distance
-		* measures how much a point influences all predictions
-		* if Cook's Distance > 1, it is probably an influential point
-		* `cooks.distance()`
+## Outliers and Influential Points
+* Outliers
+	* standardize your data points' residuals (Subtract mean(resid), Divide sd(resid)) to convert to z-scores
+		* `rstandardize()`
+	* 99.9% of data should lie within z=[-3.29, 3.29], so values outside of this range are most likely extreme outliers or errors
+	* less than 1% of data should lie outside of z=[-2.58, 2.58], and less than 5% of data should lie outside of z=[-1.96, 1.96] - more than this, and your model is probably a poor fit for your data
+* [Influential Points](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/influence.measures.html)
+	* points that have an unusually large influence on the model's form
+	* either are outliers, or have large leverage (meaning their x-values are far away from the mean x-values)
+	* Leverage
+		* `hatvalues()`
+		* ranges from 0 to 1
+		* on average `(k+1)/N`
+			* more variables => larger average leverage
+			* more observations => smaller average leverage
+			* as is evident, if the # of variables and observations is almost equal, then each point will have a huge amount of influence! This is bad
+		* if an observation is 2-3x more than the average leverage, it is probably an influential point
+	* Ways to Identify
+		* Studentized Residual = `DFFit(x) / StandardError`
+			* where DFFit is the difference in the prediction of x between the model that includes x and the model that does not include x
+				* `dffits()`
+			* only measures how much a point influences its own prediction
+			* `rstudent()`
+			* similar to Standardized Residuals, only 5% should lie outside 1.96, only 1% should lie outside 2.58
+		* Cook's Distance
+			* measures how much a point influences all predictions
+			* if Cook's Distance > 1, it is probably an influential point
+			* `cooks.distance()`
+		* DFBeta
+			* the difference that one particular observation had on one particular predictor
+			* so, there is `(# observations)x(# predictors)` DFBeta values
+			* `dfbeta(model)` returns the DFBeta matrix
+				* `dfbeta(model)[i]` returns the DFBetas for the i'th observation
+				* `dfbeta(model)[,j]` returns the DFBetas for the j'th variable
+			* DFBetas should be less than 1
+* Summary
+	* Outliers
+		* points that the model fits poorly
+		* identified via studentized/standardized residuals and deviance statistics (Logistic Regression)
+	* Influential Points
+	 	*  exert an unusually large influence on the model
+		* identified vai Cook's Distance, DFBeta, and leverage statistics
 
 ## Methods of Regression
 * Hierarchical
@@ -145,8 +167,9 @@
 		* creating a correlation matrix on the predictors (ballpark method)
 		* checking if the Variance Inflation Factor is high (smarter method)
 			* >10 is definitely multicollinear, >5 is cause for concern
-			* `vif()`
+			* `vif(model)`
 	* the variance of the predicted variable should be constant w.r.t. the predictor variables
+	* if multicollinearity exists, you should omit one of the variables
 * Errors are Normally Distributed, Independent, and have Homoscedasity
 	* No Autocorrelation = the errors of one observation should not influence the errors of the next observation
 	* test this assumption with the Durbin-Watson Test (test stat = 2 means no correlation, 0 means positive, 4 means negative)
@@ -198,19 +221,31 @@
 ## Evaluating the Model
 * `Log-Likelihood = Sum((Y_i)ln(P(Y_i)) + (1-Y_i)ln(1-P(Y_i)))`
 	* analogous to residual sum of squared errors in Linear Regression
+	* usually negative
 	* greater Log-Likelihood => better model
 	* `deviance = -2LL = -2 * Log-Likelihood`
-	* `Likelihood Ratio = -2LL(model) = 2LL(new) - 2LL(baseline)`
+		* in R's `summary()`, this is called "Residual Deviance"
+		* smaller deviance => better model
+	* `Likelihood Ratio = -2LL(model) = (-2LL(baseline)) - (-2LL(new))`
 		* where "baseline" is just guessing the most common category every time
 		* follows a Chi^2 distribution
-	* `Pseudo R^2 = -2LL(model) / -2LL(baseline) = (2LL(new) - 2LL(baseline))/-2LL(baseline)`
-		* This is the Hosmer and Lemeshow Pseudo R^2 metric - there are many others
+			* compute statistical significance via `p_val = 1 - pchisq(model$null.deviance - model$deviance, model$df.null - model$df.residual)`)
+				* 1st argument is the Chi^2 test statistic
+				* 2nd arg is `df = # variables = (df of model using no variables) - (df of model using all variables)`
+	* `Pseudo R^2 = -2LL(model) / -2LL(baseline) = Log-Likelihood / -2LL(baseline) = (-2LL(baseline)) - (-2LL(new)) / -2LL(baseline)`
+		* This is the Hosmer and Lemeshow Pseudo R^2 metric - there are many others, such as Cox and Snell's.
 		* Logistic Regression, unlike Linear Regression, does not have a "true" R^2. The Pseudo R^2's are just convenient metrics with approximately the same meaning.
 	* `AIC = -2LL + 2k`
 	* `BIC = -2LL + 2k*log(n)`
+* `fitted(model)` returns the predicted probabilities for the observations used to train the model
 
 ## Evaluating Individual Predictors
 * Z-test (unlike Linear Regression, which uses the T-test)
-* `Odds Ratio = Odds after Unit Change in Predictor / Original Odds`
-	* where `Odds = P(Yes)/P(No)`
+	* `summary()`
+* `Odds Ratio = (Odds after Unit Change in Predictor) / (Odds before Unit Change in Predictor) = e^b`
+	* where `Odds = P(Yes)/P(No)` and `b` is the coefficient
 	* under Logistic Regression, `P(Yes) = 1 / (1+e^-(a+bx))`
+
+## Comparing Two Models
+* the difference in deviances follows a Chi^2 distribution
+	* compute statistical significance via `p_val <- 1 - pchisq(A$deviance - B$deviance, A$df.residual - B$df.residual)`)
