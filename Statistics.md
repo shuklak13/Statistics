@@ -90,6 +90,8 @@
 	* transform data to create linear relations that satisfy regression assumptions
 * remember - if you have multiple models that seem equally valid but give different conclusions, then your data is insufficient to answer your question unambiguously
 * the significance of individual predictors can be measured via T-test
+* `lm(equation, data)` from the stats package
+	* you can model interaction terms in your equation using `term1:term2`
 
 ## Outliers and Influential Points
 * Outliers
@@ -220,23 +222,23 @@
 
 ## Evaluating the Model
 * `Log-Likelihood = Sum((Y_i)ln(P(Y_i)) + (1-Y_i)ln(1-P(Y_i)))`
-	* analogous to residual sum of squared errors in Linear Regression
+	* analogous to residual sum of squared errors in Linear Regression - a measure of how much of the data's variability the model does not explain
 	* usually negative
 	* greater Log-Likelihood => better model
-	* `deviance = -2LL = -2 * Log-Likelihood`
-		* in R's `summary()`, this is called "Residual Deviance"
-		* smaller deviance => better model
-	* `Likelihood Ratio = -2LL(model) = (-2LL(baseline)) - (-2LL(new))`
-		* where "baseline" is just guessing the most common category every time
-		* follows a Chi^2 distribution
-			* compute statistical significance via `p_val = 1 - pchisq(model$null.deviance - model$deviance, model$df.null - model$df.residual)`)
-				* 1st argument is the Chi^2 test statistic
-				* 2nd arg is `df = # variables = (df of model using no variables) - (df of model using all variables)`
-	* `Pseudo R^2 = -2LL(model) / -2LL(baseline) = Log-Likelihood / -2LL(baseline) = (-2LL(baseline)) - (-2LL(new)) / -2LL(baseline)`
-		* This is the Hosmer and Lemeshow Pseudo R^2 metric - there are many others, such as Cox and Snell's.
-		* Logistic Regression, unlike Linear Regression, does not have a "true" R^2. The Pseudo R^2's are just convenient metrics with approximately the same meaning.
-	* `AIC = -2LL + 2k`
-	* `BIC = -2LL + 2k*log(n)`
+* `deviance = -2LL = -2 * Log-Likelihood`
+	* in R's `summary()`, this is called "Residual Deviance"
+	* smaller deviance => better model
+* `Likelihood Ratio = -2LL(model) = (-2LL(baseline)) - (-2LL(new))`
+	* where "baseline" is just guessing the most common category every time
+	* follows a Chi^2 distribution
+		* compute statistical significance via `p_val = 1 - pchisq(model$null.deviance - model$deviance, model$df.null - model$df.residual)`)
+			* 1st argument is the Chi^2 test statistic
+			* 2nd arg is `df = # variables = (df of model using no variables) - (df of model using all variables)`
+* `Pseudo R^2 = -2LL(model) / -2LL(baseline) = Log-Likelihood / -2LL(baseline) = (-2LL(baseline)) - (-2LL(new)) / -2LL(baseline)`
+	* This is the Hosmer and Lemeshow Pseudo R^2 metric - there are many others, such as Cox and Snell's.
+	* Logistic Regression, unlike Linear Regression, does not have a "true" R^2. The Pseudo R^2's are just convenient metrics with approximately the same meaning.
+* `AIC = -2LL + 2k`
+* `BIC = -2LL + 2k*log(n)`
 * `fitted(model)` returns the predicted probabilities for the observations used to train the model
 
 ## Evaluating Individual Predictors
@@ -249,3 +251,12 @@
 ## Comparing Two Models
 * the difference in deviances follows a Chi^2 distribution
 	* compute statistical significance via `p_val <- 1 - pchisq(A$deviance - B$deviance, A$df.residual - B$df.residual)`)
+
+## Multinomial Logistic Regression
+* multiple output categories, instead of only two
+	* choose one of them to be the "baseline" via `relevel()`
+	* for each non-baseline category, compare its probability to that of the baseline with Binomial Logistic Regression
+* `mlogit` from the mlogit package
+	* to use this, you must reformat your data using `newDF <- mlogit.data(oldDF, choice = "output variable", shape
+= "wide")`
+* like with Binomial Logistic Regression, use p-values from `summary()` to determine the significance of predictors. Use the odds ratio via `exp(model$coefficients))` to determine the unit change in odds
