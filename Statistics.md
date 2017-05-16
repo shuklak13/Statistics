@@ -186,10 +186,19 @@
 * To Test the Predictors: `104 + (# of variables)`
 
 ## Robust Regression
-* an alternative to Ordinary Least Squares Regression - you would use this if your assumptions are incorrect
+* an alternative to Ordinary Least Squares Regressions
+* Robust: a model that is useful even if its assumptions are not met
 * M-Estimation
- 	* you have outliers in your data that you can't remove
+	* a class of estimators which are the optimization of an estimating function (the maximum in a MLE, the zero in a derivative
+ 	* good if you have outliers/high-leverage points in your data that you can't remove
+	* stands for "maximum likelihood-type"
+	* "best" (lowest-variance) unbiased estimator
 	* M-Estimation "weights" data based on how nicely-behaved it is, so that points with higher residuals have a smaller impact on the regression line
+	* create some function `p(e)` of the residual `e` where `p` is...
+	 	* always nonnegative
+		* symmetric about `e=0`, and equals 0 when `e=0`
+		* monotonically increases away from `e=0` (as e gets farther from 0, p increases)
+	* Ex: least-squares and maximum-likelihood are special cases of this
 	* `rlm` from the MASS package
 * [Sandwich, Meat, and Bread](https://cran.r-project.org/web/packages/sandwich/index.html)
 	* the variance of your residuals is not constant (Heteroscedasity)
@@ -270,10 +279,7 @@
 * `yuen(groupMeasure1, groupMeasureB, trimmedPercentage)` from WRS2 is used to trim outliers before the t-test, or `yuend()` if dependent
 	* `yuenbt(groupMeasure1, groupMeasureB, trimmedPercentage, nboot)` to use bootstrapping, or `ydbt()` if dependent
 * `pb2gen(groupMeasure1, groupMeasureB, nboot)` from WRS2 is used for M-estimation with bootstrapping, or `bootdpci()` if dependent
-	* M-estimation is a class of estimators which are the optimization of an estimating function (the maximum in a MLE, the zero in a derivative
-	* stands for "maximum likelihood-type"
-	* "best" (lowest-variance) unbiased estimator
-	* least-squares and maximum-likelihood are special cases of this
+* what if you have more than 2 hypotheses? ANOVA
 
 ## Independent T-Test
 * `t = [(observed difference between sample means) - (expected difference between population means under null hypothesis)]/(estimate of standard error of difference between sample means)`
