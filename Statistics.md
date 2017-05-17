@@ -295,3 +295,18 @@
 
 ## Dependent T-Test
 * pretty much same as Independent, except that instead of being concerned with difference of means, we're concerned with means of differences
+
+
+# [Linear Discriminant Analysis (LDA)](http://sebastianraschka.com/Articles/2014_python_lda.html)
+* dimensionality-reduction-via projection technique, similar to PCA, commonly used in pre-processing
+* differences from PCA
+	* reduce the number of features of the data by finding axes which maximize separation between classes (unlike PCA, which is concerned with finding axes which maximize variance of the data)
+	* supervised (class-based), unlike PCA (concerned with data only, not external classes)
+* you could essentially use this as an alternative or supplement to feature selection techniques such as stepwise regression
+* can also be used as a classification technique
+	* assumes data is normally distributed, and that each class has identical covariance matrices
+* `lda()` from MASS (has the same syntax as `lm()`)
+	* returns...
+		* the percentage of each group is in the data
+		* the mean of each variable in each group
+		*  the coefficients of the old variables used to create the linear discriminant
