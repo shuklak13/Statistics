@@ -213,6 +213,12 @@
 * use `relevel(data$variable, "baseline")` lets you reassign the baseline value of a categorical variable
 * if you do regression on categorical data, R will automatically set the contrast for you
 
+## Least-Squares vs Maximum-Likelihood forms of creating regressions
+* least-squares: find the coefficients b that minimize the function of the sum of the squares of the distances between Y and Y_bar
+	* by setting the derivatives of the function with respect to each coefficient to 0 and then solving for the coefficients
+* maximum-likelihood: find the coefficients that maximize the likelihood
+	* where the likelihood is the product of every Y's pdf, where Y is a normal distribution centered around b0+b1*X with variance equal to the variance of the error (Y-b0-b1X)
+
 # Logistic Regression
 * categorical y breaks the assumption that there is a linear relation between x and y, so we can't use the Linear Regression equation `y = a + bx`
 	* use MLE to find coefficients
