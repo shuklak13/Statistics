@@ -92,6 +92,7 @@
 * the significance of individual predictors can be measured via T-test
 * `lm(equation, data)` from the stats package
 	* you can model interaction terms in your equation using `term1:term2`
+* Chapter 11 of "Mathemtical Statistics with Applications" by Wackerly covers the mathematics behind Regression in more depth.
 
 ## Outliers and Influential Points
 * Outliers
@@ -275,6 +276,11 @@
 	* to use this, you must reformat your data using `newDF <- mlogit.data(oldDF, choice = "output variable", shape
 = "wide")`
 * like with Binomial Logistic Regression, use p-values from `summary()` to determine the significance of predictors. Use the odds ratio via `exp(model$coefficients))` to determine the unit change in odds
+
+## Other Regression Types
+* polynomial regression is a subset of linear regression where the terms may include powers of `x`, such as `x^2` and `x^(1/2)`
+	* note that this is still linear regression, since the "linear" part is referring to the coefficients `b`, not to `x`!
+* nonlinear regression types include Piecewise Regression and Decision Trees (but not Polynomial Regression)
 
 # T-Test
 * Repeated Measures Design: using the same subjects multiple times, rather than each observation being on a new subject (Ex: before-and-after experiments)
