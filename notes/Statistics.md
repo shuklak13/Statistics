@@ -4,6 +4,7 @@
 	1. check if the p-value is less than alpha, or...
 	2. use one of the many `*.test()` functions (like `z.test`, `t.test`, and `cor.test()`)
 
+---
 
 # Correlation
 ## Pearson's Correlation Coefficient r
@@ -83,6 +84,7 @@
 	* xy vs zy in the same sample
 	* `t-stat = (r_xy-r_zy) * sqrt[(n-3)(1+r_xz) / 2(1-r_xy^2-r_xz^2-r_zy^2+2r_xy*r_xz*r_zy)]`
 
+---
 
 # Regression
 * prior to creating regression models, it's a good idea to...
@@ -220,6 +222,8 @@
 * maximum-likelihood: find the coefficients that maximize the likelihood
 	* where the likelihood is the product of every Y's pdf, where Y is a normal distribution centered around b0+b1*X with variance equal to the variance of the error (Y-b0-b1X)
 
+---
+
 # Logistic Regression
 * categorical y breaks the assumption that there is a linear relation between x and y, so we can't use the Linear Regression equation `y = a + bx`
 	* use MLE to find coefficients
@@ -280,7 +284,17 @@
 ## Other Regression Types
 * polynomial regression is a subset of linear regression where the terms may include powers of `x`, such as `x^2` and `x^(1/2)`
 	* note that this is still linear regression, since the "linear" part is referring to the coefficients `b`, not to `x`!
+	* `lm(y ~ poly(x, 3))` to perform a regression of the form `y = ax^3 + bx^2 + cx + d`
+* Neighbor Regression
+	* an unsupervised regressor, where predictions are made based on the y-value of neighboring points
+		* neighbors may be weighted on their proximity to the queried point
+	* 2 types
+		* K-Nearest-Neighbor
+		* Radius-based
+	* `KNeighborsRegressor()` and `RadiusNeighborsRegressor()` from sklearn.neighbors
 * nonlinear regression types include Piecewise Regression and Decision Trees (but not Polynomial Regression)
+
+---
 
 # T-Test
 * Repeated Measures Design: using the same subjects multiple times, rather than each observation being on a new subject (Ex: before-and-after experiments)
@@ -308,6 +322,7 @@
 ## Dependent T-Test
 * pretty much same as Independent, except that instead of being concerned with difference of means, we're concerned with means of differences
 
+---
 
 # [Linear Discriminant Analysis (LDA)](http://sebastianraschka.com/Articles/2014_python_lda.html)
 * dimensionality-reduction-via projection technique, similar to PCA, commonly used in pre-processing
@@ -333,4 +348,35 @@
 ## Quadratic Discriminant Analysis
 * can learn quadratic boundaries, and is therefore more flexible than LDA
 * allows for heterogeneity of classes' covariance matrices
-* `qda()` from 
+* `qda()` from
+
+---
+
+# Decision Trees
+* classification technique that "splits" the data into a tree structure
+* many variations exist, but the main idea is maximizing information gain (usually measured by reduction in entropy) so that the leaves are highly pure (only one class)
+
+---
+
+# [Nearest Neighbor](http://scikit-learn.org/stable/modules/neighbors.html)
+* `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn
+* neighbors may be weighted on their proximity to the queried point
+
+## Distance Calculations
+* Brute Force
+	* compute distance between every pair of elements - slow, but no data structure overhead
+	* O[DN]
+* K-D Tree
+	* heuristic to speed up distance calculations - if node A is close to node B, and node B is far from node C, then node A is far from node C.
+	* O[Dlog(n)] for small n (&lt;20), O[DN] for large n (>20)
+* Ball Tree
+	* another heuristic - more expensive than K-D for low dimensions (&lt;20) but less expensive for high dimensions (>20)
+		* divides data into hyperspheres. By knowing which hyperspheres A and B belong to, we can set an upper- and lower-bound on the distance between A and B
+	* O[Dlog(n)]
+* Which to use?
+	* Brute force is fastest for small samples (N&lt;20) since it doesn't have to construct a data structure
+	* Brute force is not affected by # of neighbors k (the others have to make additional queries, since each distance is not computed explicitly)
+	* Generally...
+		* Brute force is best if k is more than half of N
+		* K-D is best if k is less than half of N and # dimensions is less than 20
+		* Ball is best if k is less than half of N and # dimensions is more than 20
