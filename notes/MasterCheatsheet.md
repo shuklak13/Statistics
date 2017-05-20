@@ -40,6 +40,7 @@ This master cheatsheet will tell you...
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
 * R: `lda(y ~ x)` and `qda(y ~ x)` from MASS
+* Python: `LinearDiscriminantAnalysis.fit(x,y).predict(x)` and `QuadraticDiscriminantAnalysis.fit(x,y).predict(x)` from sklearn.discriminant_analysis
 
 ## K-Nearest Neighbors
 * R: `knn(training, testing, trainingY, k)` from class
