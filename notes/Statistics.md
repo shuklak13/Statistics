@@ -352,9 +352,21 @@
 
 ---
 
-# Decision Trees
-* classification technique that "splits" the data into a tree structure
-* many variations exist, but the main idea is maximizing information gain (usually measured by reduction in entropy) so that the leaves are highly pure (only one class)
+# [Decision Trees](http://scikit-learn.org/stable/modules/tree.html)
+* greedy classification technique that "splits" the data into a tree structure to locally maximize information gain (usually measured by a reduction in entropy, so that the leaves will eventually be high in purity)
+* many variations exist
+* Advantages
+	* extremely easy to interpret
+	* requires little data preparation (no normalization, dummy vars, etc.)
+* Disadvantages
+	* unstable - small variations produce a completely different decision tree
+	* greedy - optimizes locally, not globally
+	* can't learn some concepts such as XOR, MUX, or parity
+	* very vulnerable to overfitting - make sure to use pruning or validation/ensemble methods to correct for this
+	* poor at out-of-sample prediction
+* can also be used as a regressor (outputs will be in discrete, rather than continuous values)
+* `rpart(y ~ x, method)` from rpart
+	* where `method` is `"class"` for classification, or `"anova"` for regression
 
 ---
 

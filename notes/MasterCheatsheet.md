@@ -5,7 +5,8 @@ This master cheatsheet will tell you...
 2. the techniques used to model solutions to those problems
 3. the assumptions those techniques require
 4. the metrics that can be used to measure the effectiveness of the resulting models
-5. how to use those techniques in [R and/or Python](http://mathesaurus.sourceforge.net/r-numpy.html)
+5. the pros and cons of each technique
+6. how to use those techniques in [R and/or Python](http://mathesaurus.sourceforge.net/r-numpy.html)
 
 # Regression
 ## Linear Regression
@@ -20,8 +21,8 @@ This master cheatsheet will tell you...
 * Python: `linear_model.LinearRegression.fit(PolynomialFeatures(degree=2).transform(X))` from sklearn and sklearn.preprocessing
 
 ## Decision Tree Regression
-* R:
-* Python:
+* R: `rpart(y ~ x, "anova")` from rpart
+* Python: `tree.DecisionTreeRegressor().fit(x, y)` from sklearn
 
 ## Neighbor Regression
 * R: `knn.reg()` from FNN
@@ -35,8 +36,8 @@ This master cheatsheet will tell you...
 * Python: `linear_model.LogisticRegression().fit()` from sklearn
 
 ## Decision Trees
-* R: 
-* Python:
+* R: `rpart(y ~ x, "class")` from rpart
+* Python: `tree.DecisionTreeClassifier().fit(x, y)` from sklearn
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
 * R: `lda(y ~ x)` and `qda(y ~ x)` from MASS
