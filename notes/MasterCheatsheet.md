@@ -35,7 +35,7 @@ This master cheatsheet will tell you...
 * Python: `linear_model.LogisticRegression().fit()` from sklearn
 
 ## Decision Trees
-* R:
+* R: 
 * Python:
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
