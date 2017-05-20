@@ -311,14 +311,26 @@
 
 # [Linear Discriminant Analysis (LDA)](http://sebastianraschka.com/Articles/2014_python_lda.html)
 * dimensionality-reduction-via projection technique, similar to PCA, commonly used in pre-processing
+* looks at classes, and reduce the number of features by creating axes in order to minimize the ratio `(within-group variance)/(between-group variance)`
+	* we want groups with elements similar to other elements in the same group, and dissimilar to elements outside of the group
+	* these axes are also called "latent variables" or "discriminants". These are the linear combinations of variables that distinguish classes most strongly.
 * differences from PCA
-	* reduce the number of features of the data by finding axes which maximize separation between classes (unlike PCA, which is concerned with finding axes which maximize variance of the data)
 	* supervised (class-based), unlike PCA (concerned with data only, not external classes)
+	* finding axes which maximize separation between classes (unlike PCA, which is concerned with finding axes which maximize variance of the data)
 * you could essentially use this as an alternative or supplement to feature selection techniques such as stepwise regression
-* can also be used as a classification technique
-	* assumes data is normally distributed, and that each class has identical covariance matrices
+* [can also be used as a classification technique](http://people.revoledu.com/kardi/tutorial/LDA/LDA.html#LDA)
+	* assumptions
+		* data is normally distributed
+		* each class has identical variance-covariance matrices for the input variables
+			* [if the matrices are substantially different, observations will be skewed towards the class with greater variance](https://stats.stackexchange.com/questions/71489/three-versions-of-discriminant-analysis-differences-and-how-to-use-them)
+	* to predict which class a new point belongs to, we use Bayes' Rule
 * `lda()` from MASS (has the same syntax as `lm()`)
 	* returns...
 		* the percentage of each group is in the data
 		* the mean of each variable in each group
 		*  the coefficients of the old variables used to create the linear discriminant
+
+## Quadratic Discriminant Analysis
+* can learn quadratic boundaries, and is therefore more flexible than LDA
+* allows for heterogeneity of classes' covariance matrices
+* `qda()` from 
