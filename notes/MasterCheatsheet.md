@@ -34,6 +34,20 @@ This master cheatsheet will tell you...
 * [Python: `LinearSVR`, `SVR`, and `NuSVR` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
 ## Accuracy Metrics
+* R^2 (Coefficient of Determination)
+	* [where R is the correlation between Y and Y_hat](https://stats.stackexchange.com/questions/134167/is-there-any-difference-between-r2-and-r2)
+		* unlike r, which is the correlation between X and Y (equal for simple linear regression)
+	* measures the proportion of y's variance explained by the model
+	* note that this is NOT always equal to the square of the correlation of r
+* Adjusted R^2
+	* penalizes the model for adding unnecessary features
+* AIC and BIC
+	* similar to Adjusted R^2
+	* unlike R^2, cannot be used as a standalone measure
+* F-Ratio
+	* ratio of variance the model can't explain over the variance the model can explain
+* R: `summary()` and `anova()`
+* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
 
 ---
 
@@ -117,7 +131,9 @@ This master cheatsheet will tell you...
 * recall = (# true positives) / (# true positives + false negatives)
 * F-score = 2 \* precision \* recall / (precision + recall)
 * Area under the Receiver-Operating-Characteristic Curve
+	* also known as AUC of ROC
 	* a curve measuring the growth of the true-positive-rate (y-axis) relative to the false-positive-rate (x-axis) as a model's threshold is reduced
+* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
 
 ---
 
