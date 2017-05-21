@@ -2,7 +2,7 @@
 This master cheatsheet will tell you...
 
 1. some different statistical problems (regression, classification, etc.)
-2. the techniques used to model solutions to those problems
+2. the techniques used to model solutions for those problems
 3. the assumptions those techniques require
 4. the metrics that can be used to measure the effectiveness of the resulting models
 5. the pros and cons of each technique
@@ -28,20 +28,55 @@ This master cheatsheet will tell you...
 * R: `knn.reg()` from FNN
 * Python: `KNeighborsRegressor()` and `RadiusNeighborsRegressor()` from sklearn.neighbors
 
+## Accuracy Metrics
+
 ---
 
 # Classification
 ## Logistic Regression
+* Assumptions:
+* Advantages:
+	* relatively robust: no assumptions are made about the data's distribution
 * R: `glm(family = binomial())` from the mlogit, or `mlogit()` if the output consists of multiple classes
 * Python: `linear_model.LogisticRegression().fit()` from sklearn
 
 ## Decision Trees
+* Advantages
+	* extremely easy to interpret
+	* requires little data preparation (no normalization, dummy vars, feature selection required)
+	* few assumptions about the data
+* Disadvantages
+	* unstable - small variations produce a completely different decision tree
+	* greedy - optimizes locally, not globally
+	* very vulnerable to overfitting - make sure to use pruning or validation/ensemble methods to correct for this
+	* poor at out-of-sample prediction
 * R: `rpart(y ~ x, "class")` from rpart
 * Python: `tree.DecisionTreeClassifier().fit(x, y)` from sklearn
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
-* R: `lda(y ~ x)` and `qda(y ~ x)` from MASS
-* Python: `LinearDiscriminantAnalysis.fit(x,y).predict(x)` and `QuadraticDiscriminantAnalysis.fit(x,y).predict(x)` from sklearn.discriminant_analysis
+* Assumptions:
+	* data is normally distributed
+	* homoscedasticity (each class has identical variance-covariance matrices)
+		* [if not, observations will be skewed towards the class with greater variance](https://stats.stackexchange.com/questions/71489/three-versions-of-discriminant-analysis-differences-and-how-to-use-them)
+		* Quadratic Discriminant relaxes this assumption, so variance matrices may be heterogeneous
+* [comparision of LDA to Logistic Regression](http://mrvar2.fdv.uni-lj.si/pub/mz/mz1.1/pohar.pdf)
+	* note that these two methods perform very similarly for large samples
+	* Advantages over Logistic Regression:
+		* more stable for small, normally-distributed samples
+		* performs better for multiclass problems
+	* Disadvantages to Logistic Regression:
+		* data must be normally distributed
+		* LDA's assumptions are so rarely met
+		* performs worse for 2-class problems
+* comparision of QDA and LDA
+	* When to use QDA over LDA
+		* if the class variances are expected to be different
+		* if the class boundaries are expected to be nonlinear
+	* When to use LDA over QDA
+		* if the class boundary is expected to be linear
+		* if n is small (estimating covariance matrices leads to high bias on a small sample)
+* [R:](https://rpubs.com/ryankelly/LDA-QDA) `lda(y ~ x)` and `qda(y ~ x)` from MASS
+* [Python:](http://scikit-learn.org/stable/modules/lda_qda.html) `LinearDiscriminantAnalysis.fit(x,y).predict(x)` and `QuadraticDiscriminantAnalysis.fit(x,y).predict(x)` from sklearn.discriminant_analysis
 
 ## K-Nearest Neighbors
 * R: `knn(training, testing, trainingY, k)` from class
@@ -59,4 +94,15 @@ This master cheatsheet will tell you...
 
 ---
 
-# Checking Assumptions
+# Checking for Assumptions and Correcting Data
+* In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
+
+## Normality
+
+## Homogeneous Variance
+
+## Independent of Observations
+
+## Feature Selection
+
+## Nonlinear relationships

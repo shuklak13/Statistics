@@ -12,32 +12,24 @@
 		* data is normally distributed
 		* each class has identical variance-covariance matrices for the input variables
 			* [if the matrices are substantially different, observations will be skewed towards the class with greater variance](https://stats.stackexchange.com/questions/71489/three-versions-of-discriminant-analysis-differences-and-how-to-use-them)
-	* to predict which class a new point belongs to, we use Bayes' Rule
+	* [to predict which class a new point belongs to, it approximates Bayes' Classifier, the the classfier with teh lowest possible eror rate](https://rpubs.com/ryankelly/LDA-QDA)
 * `lda()` from MASS (has the same syntax as `lm()`)
 	* returns...
 		* the percentage of each group is in the data
 		* the mean of each variable in each group
-		*  the coefficients of the old variables used to create the linear discriminant
+		* the coefficients of the old variables used to create the linear discriminant
 
 ## Quadratic Discriminant Analysis
 * can learn quadratic boundaries, and is therefore more flexible than LDA
 * allows for heterogeneity of classes' covariance matrices
+	* estimates a separate covariance matrix for each class - adds computattion time
 * `qda()` from MASS
 
 ---
 
 # [Decision Trees](http://scikit-learn.org/stable/modules/tree.html)
 * greedy classification technique that "splits" the data into a tree structure to locally maximize information gain (usually measured by a reduction in entropy, so that the leaves will eventually be high in purity)
-* many variations exist
-* Advantages
-	* extremely easy to interpret
-	* requires little data preparation (no normalization, dummy vars, etc.)
-* Disadvantages
-	* unstable - small variations produce a completely different decision tree
-	* greedy - optimizes locally, not globally
-	* can't learn some concepts such as XOR, MUX, or parity
-	* very vulnerable to overfitting - make sure to use pruning or validation/ensemble methods to correct for this
-	* poor at out-of-sample prediction
+	* many variations exist - some use Gini Impurity or Variance Reduction instead of Information Gain
 * can also be used as a regressor (outputs will be in discrete, rather than continuous values)
 * `rpart(y ~ x, method)` from rpart
 	* where `method` is `"class"` for classification, or `"anova"` for regression
