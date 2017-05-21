@@ -40,6 +40,11 @@
 * `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn
 * neighbors may be weighted on their proximity to the queried point
 
+## Choice of k
+* sqrt(n)
+* Cross-Validation
+* it really comes down to experimenting on the data
+
 ## Distance Calculations
 * Brute Force
 	* compute distance between every pair of elements - slow, but no data structure overhead

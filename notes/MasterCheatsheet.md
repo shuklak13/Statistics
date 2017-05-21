@@ -79,9 +79,19 @@ This master cheatsheet will tell you...
 * [Python:](http://scikit-learn.org/stable/modules/lda_qda.html) `LinearDiscriminantAnalysis.fit(x,y).predict(x)` and `QuadraticDiscriminantAnalysis.fit(x,y).predict(x)` from sklearn.discriminant_analysis
 
 ## K-Nearest Neighbors
+* Assumptions
+	* all parameters can be mapped onto a hyperspace with a meaningful distance function
+* Advantages
+	* Unsupervised Lazy-Learner - no model needs to be created, so no training time!
+	* Nonparametric - no assumptions about underlying data distribution
+* Disadvantages
+	* because all the computations are shifted from the training phase to the testing phase, the testing phase is more computationally expensive.
+	* all data points need to be stored, so high memory consumption
 * R: `knn(training, testing, trainingY, k)` from class
-* Python: `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn`
-* Unsupervised, so no model needs to be created
+* Python: `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn
+
+## Support Vector Machine
+
 
 ## Accuracy Metrics
 * accuracy = (# correct)/(# incorrect)
