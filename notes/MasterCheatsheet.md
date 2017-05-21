@@ -28,6 +28,11 @@ This master cheatsheet will tell you...
 * R: `knn.reg()` from FNN
 * Python: `KNeighborsRegressor()` and `RadiusNeighborsRegressor()` from sklearn.neighbors
 
+## SVM Regression
+* [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
+	* Note that SVM regression and classification both use the same code! The function determines whether to perform regression or classification depending on whether y is continuous or categorical.
+* [Python: `LinearSVR`, `SVR`, and `NuSVR` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
+
 ## Accuracy Metrics
 
 ---
@@ -82,7 +87,7 @@ This master cheatsheet will tell you...
 * Assumptions
 	* all parameters can be mapped onto a hyperspace with a meaningful distance function
 * Advantages
-	* Unsupervised Lazy-Learner - no model needs to be created, so no training time!
+	* Lazy-Learner - no model needs to be created, so no training time!
 	* Nonparametric - no assumptions about underlying data distribution
 * Disadvantages
 	* because all the computations are shifted from the training phase to the testing phase, the testing phase is more computationally expensive.
@@ -91,7 +96,19 @@ This master cheatsheet will tell you...
 * Python: `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn
 
 ## Support Vector Machine
-
+* Assumptions
+* Advantages
+	* effective in high-dimensional data
+	* works well with both linearly and nonlinearly separable data [(nonlinearly-separable data uses the kernel trick)](https://en.wikipedia.org/wiki/Support_vector_machine#Nonlinear_classification)
+	* finds the global minimum
+	* memory efficient - only a few points are used to create decision boundary
+	* surprisingly effective when # dimensions > # observations
+* Disadvantages
+	* does not return a confidence value
+	* difficult to interpret model
+	* they can scare people
+* [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
+* [Python: `LinearSVC`, `SVC`, and `NuSVC` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
 ## Accuracy Metrics
 * accuracy = (# correct)/(# incorrect)
@@ -107,12 +124,35 @@ This master cheatsheet will tell you...
 # Checking for Assumptions and Correcting Data
 * In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
 
+## Idependently and Independentically Distributed Observations
+* fundamental assumption of almost all statistical learning methods
+
 ## Normality
+* histogram to make sure there is no skew
+* QQ-plot against Normal Distribution - if straight line, normal
+* Shapiro-Wilk Test (if p < .05, then not a normal distribution)
+	* R: `shapiro.test()`
+	* Python: `scipy.stats.shapiro()`
+* Fixing Skew
+	* Transformations
+		* Positive / Right-Tail
+			* Log, Square-Root, or Reciprocal
+				* requires data to be positive - if necessary, add a constant to all observations
+		* Negative / Left-Tail
+			* same as above, but reverse scores by subtracting each observation from the largest observation
+	* Robust Methods
+		* Bootstrappings
 
-## Homogeneous Variance
-
-## Independent of Observations
+## Homogeneous Variance (Homoscedasticity)
+* plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
+* Levene's Test or F-Test/Variance Ratio (if p < .05, then variance is heterogeneous)
+	* R: `levene.test()` and `var.test()`
+	* Python: `scipy.stats.levene()` and [`scipy.stats.f()`](http://stackoverflow.com/questions/21494141/how-do-i-do-a-f-test-in-python)
 
 ## Feature Selection
 
 ## Nonlinear relationships
+
+## The Problem with Hypothesis Testing
+* for large enough samples, alternate hypothesis will always be true
+* because of this, we shouldn't rely exclusively on hypothesis testing to determine whether our data satisfies the model's assumptions
