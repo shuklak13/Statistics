@@ -86,7 +86,7 @@
 * the significance of individual predictors can be measured via T-test
 * `lm(equation, data)` from the stats package
 	* you can model interaction terms in your equation using `term1:term2`
-* Chapter 11 of "Mathemtical Statistics with Applications" by Wackerly covers the mathematics behind Regression in more depth.
+* Chapter 11 of "Mathemtaical Statistics with Applications" by Wackerly covers the mathematics behind Regression in more depth.
 
 ## Outliers and Influential Points
 * Outliers
@@ -106,12 +106,14 @@
 			* as is evident, if the # of variables and observations is almost equal, then each point will have a huge amount of influence! This is bad
 		* if an observation is 2-3x more than the average leverage, it is probably an influential point
 	* Ways to Identify
-		* Studentized Residual = `DFFit(x) / StandardError`
-			* where DFFit is the difference in the prediction of x between the model that includes x and the model that does not include x
-				* `dffits()`
+		* Studentized Residual = `residuals / StandardError`
 			* only measures how much a point influences its own prediction
 			* `rstudent()`
 			* similar to Standardized Residuals, only 5% should lie outside 1.96, only 1% should lie outside 2.58
+		* DFFITS
+			* DFFITS is the difference in the prediction of x between the model that includes x and the model that does not include x
+			* equal to `Studentized Residual * sqrt(leverage/(1-leverage))`
+				* `dffits()`
 		* Cook's Distance
 			* measures how much a point influences all predictions
 			* if Cook's Distance > 1, it is probably an influential point
@@ -128,7 +130,7 @@
 		* points that the model fits poorly
 		* identified via studentized/standardized residuals and deviance statistics (Logistic Regression)
 	* Influential Points
-	 	*  exert an unusually large influence on the model
+	 	* exert an unusually large influence on the model
 		* identified vai Cook's Distance, DFBeta, and leverage statistics
 
 ## Methods of Regression

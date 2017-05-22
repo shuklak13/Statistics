@@ -137,7 +137,7 @@ This master cheatsheet will tell you...
 
 ---
 
-# Checking for Assumptions and Correcting Data
+# Preprocessing: Checking for Assumptions and Correcting Data
 * In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
 
 ## Idependently and Independentically Distributed Observations
@@ -158,6 +158,12 @@ This master cheatsheet will tell you...
 			* same as above, but reverse scores by subtracting each observation from the largest observation
 	* Robust Methods
 		* Bootstrappings
+* Z-scores (for normally-distributed data)
+	* 99.9% of data should lie within z=[-3.29, 3.29], 99% within z=[-2.58, 2.58], and 95% within z=[-1.96, 1.96]
+	* 99.7% of data should lie within 3 standard deviations, 95% within 2 standard deviations, and 68% within 1 standard deviations
+	* if not, your data does not follow a standard normal distribution
+	* R: `scale()`
+	* [Python: `preprocessing.scale()` from sklearn](http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler)
 
 ## Homogeneous Variance (Homoscedasticity)
 * plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
@@ -166,9 +172,49 @@ This master cheatsheet will tell you...
 	* Python: `scipy.stats.levene()` and [`scipy.stats.f()`](http://stackoverflow.com/questions/21494141/how-do-i-do-a-f-test-in-python)
 
 ## Feature Selection
+* compare models to maximize performance metrics
+* for Regression in R, `step()` and `leaps()` do this for you
 
 ## Nonlinear relationships
 
 ## The Problem with Hypothesis Testing
 * for large enough samples, alternate hypothesis will always be true
 * because of this, we shouldn't rely exclusively on hypothesis testing to determine whether our data satisfies the model's assumptions
+
+## Outliers and Influential Points
+* These should be removed **if** you can conclude that they are data entry errors, or they come from a different population than the rest of the sample
+* Investigate potential outliers/influential points using multiple metrics - don't make hasty conclusions
+* Note that transformations can modify outliers/influential points! For maximum coverage, look at outliers/influential points before and after you transform.
+* [Python: `influence_plot(prestige_model, criterion)` from `statsmodels.graphics`](http://www.statsmodels.org/0.8.0/examples/notebooks/generated/regression_plots.html)
+	* plots the influence of each observation, using the specified criterion (Cook's Distance or DFFITS)
+* You can use visual indicators like scatterplots or residual plots to determine outliers and influential points. You can also use statistical metrics, given below.
+* [R: `influence.measures(model)`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/influence.measures.html)
+	* gives you standardized, studentized residuals, dfbetas, Cook's Distances, and hat values for each observation used to train the model
+
+### Outliers
+* points that fit the model poorly
+* [Studentized Residual](https://stats.stackexchange.com/questions/22653/raw-residuals-versus-standardised-residuals-versus-studentised-residuals-what)
+	* residual, divided by sample standard error
+	* R: `rstudent()`
+
+### Influential Points
+* exert an unusually large influence ont he model's coefficients
+* [Leverage AKA Hat Value](https://en.wikipedia.org/wiki/Leverage_%28statistics%29)
+	* measures how far an observation's independent variables deviate from their mean
+	* if an observation is more than 2x or 3x of the average leverage `(k+1)/N`, then it is probably an influential point
+	* R: `hatvalues()`
+* [DFFITS](https://en.wikipedia.org/wiki/DFFITS)
+	* the difference in the prediction of an observation x, between the model that includes x, and the model that does not include x
+	* equal to the studentized residual, scaled by leverage
+	* R: `dffits()`
+* Cook's Distance
+	* measures how a particular observation influences the predictions of *all* observations in the training set (unlike DFFITS, which is only measures the influence on the same observation)
+	* conceptually equivalent to DFFITS
+	* [if greater than 1 or 4/N, probably an influential point](https://en.wikipedia.org/wiki/Cook%27s_distance#Detecting_highly_influential_observations)
+	* R: `cooks.distance()`
+* DFBeta
+	* the influence that one particular observation had on one particular predictor
+	* R: `dfbeta(model)` returns the DFBeta matrix
+		* `dfbeta(model)[i]` returns the DFBetas for the i'th observation
+		* `dfbeta(model)[,j]` returns the DFBetas for the j'th variable
+	* [values greater than 1 or 2/sqrt(n) are probably influential points](http://www.albany.edu/faculty/kretheme/PAD705/SupportMat/DFBETA.pdf)
