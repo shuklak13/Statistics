@@ -8,11 +8,22 @@ This master cheatsheet will tell you...
 5. the pros and cons of each technique
 6. how to use those techniques in [R and/or Python](http://mathesaurus.sourceforge.net/r-numpy.html)
 
+## Python vs R
+* although this cheatsheet supports both, many statistical techniques are currently not supported by Python. In this case, you have two options:
+	1. Implement the technique yourself, or...
+	2. Use [rpy2](https://pypi.python.org/pypi/rpy2) to call R code from Python
+* if you want to use Python, you should be aware of the following libraries:
+	* pandas - data.frame
+	* sklearn - machine learning
+	* statsmodel - traditional statistics
+
+---
+
 # Regression
 ## Linear Regression
 ### Ordinary Least-Squares Linear Regression
 * R: `lm(y ~ x)`
-* Python: `linear_model.LinearRegression().fit(x)` from sklearn
+* Python: `linear_model.LinearRegression().fit(x)` from sklearn, or `statsmodel.formula.api.ols(formula, data).fit()` from statsmodel
 
 ### Robust Linear Regression
 
@@ -24,6 +35,10 @@ This master cheatsheet will tell you...
 * R: `rpart(y ~ x, "anova")` from rpart
 * Python: `tree.DecisionTreeRegressor().fit(x, y)` from sklearn
 
+### Random Decision Forest Regression
+* R: `randomForest()` from randomForest
+* Python: `RandomForestRegressor()` from sklearn.ensemble
+
 ## Neighbor Regression
 * R: `knn.reg()` from FNN
 * Python: `KNeighborsRegressor()` and `RadiusNeighborsRegressor()` from sklearn.neighbors
@@ -32,6 +47,22 @@ This master cheatsheet will tell you...
 * [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
 	* Note that SVM regression and classification both use the same code! The function determines whether to perform regression or classification depending on whether y is continuous or categorical.
 * [Python: `LinearSVR`, `SVR`, and `NuSVR` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
+
+## Hierarchical Linear Model
+* Multiple levels [(ex: school, district, state, country)](https://stats.stackexchange.com/questions/63621/what-is-the-difference-between-a-hierarchical-linear-regression-and-an-ordinary). For any observation, gives most weight to lowest level if large enough sample. If too small, gives more weight to the level above.
+* [NOT to be confused with Hierarchical Regression, which is just creative a successive chain of regression models adding more predictors each time](http://www.theanalysisfactor.com/confusing-statistical-term-4-hierarchical-regression-vs-hierarchical-model/)
+* R:
+* Python:
+
+## Ride Regression AKA Weight Decay AKA Tikhonov Regularization
+* [does *not* give an unbiased estimator](https://onlinecourses.science.psu.edu/stat857/node/155)
+* penalizes large coefficients
+	* tradeoff beteen penalty term and residual-sum-of-squares (better coefficients give less error)
+* good for dealing with multicollinearity
+* R:
+* Python:
+
+## Lasso
 
 ## Accuracy Metrics
 * R^2 (Coefficient of Determination)
@@ -47,7 +78,7 @@ This master cheatsheet will tell you...
 * F-Ratio
 	* ratio of variance the model can't explain over the variance the model can explain
 * R: `summary()` and `anova()`
-* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
+* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html) or [`model.fit().summary()` from statsmodel](http://www.statsmodels.org/devel/generated/statsmodels.regression.linear_model.RegressionResults.summary.html)
 
 ---
 
@@ -57,7 +88,7 @@ This master cheatsheet will tell you...
 * Advantages:
 	* relatively robust: no assumptions are made about the data's distribution
 * R: `glm(family = binomial())` from the mlogit, or `mlogit()` if the output consists of multiple classes
-* Python: `linear_model.LogisticRegression().fit()` from sklearn
+* Python: `LogisticRegression().fit()` from sklearn.linear_model, or [`Logit(y, x).fit()` or `GLM(family=families.Gamma())` from statsmodels.api](http://www.statsmodels.org/stable/examples/notebooks/generated/glm.html)
 
 ## Decision Trees
 * Advantages
@@ -71,6 +102,10 @@ This master cheatsheet will tell you...
 	* poor at out-of-sample prediction
 * R: `rpart(y ~ x, "class")` from rpart
 * Python: `tree.DecisionTreeClassifier().fit(x, y)` from sklearn
+
+### Random Decision Forests
+* R: `randomForest()` from randomForest
+* Python: []`RandomForestClassifier()` from sklearn.ensemble](http://scikit-learn.org/stable/modules/ensemble.html#forest)
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
 * Assumptions:
@@ -124,6 +159,10 @@ This master cheatsheet will tell you...
 * [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
 * [Python: `LinearSVC`, `SVC`, and `NuSVC` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
+## Naive Bayes
+* R:
+* Python:
+
 ## Accuracy Metrics
 * accuracy = (# correct)/(# incorrect)
 	* should be compared against the naive accuracy (blindly guessing the most common class each time)
@@ -134,6 +173,18 @@ This master cheatsheet will tell you...
 	* also known as AUC of ROC
 	* a curve measuring the growth of the true-positive-rate (y-axis) relative to the false-positive-rate (x-axis) as a model's threshold is reduced
 * Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
+
+---
+
+# Clustering
+
+## K-Means
+* R:
+* Python: [`KMeans(n_clusters)` from sklearn.cluster](http://scikit-learn.org/stable/modules/clustering.html#k-means)
+
+## Hierarchical/Agglomerative Clustering
+* R:
+* Python: [`AgglomerativeClustering().fit(data)` from sklearn.cluster](http://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py)
 
 ---
 
@@ -157,7 +208,7 @@ This master cheatsheet will tell you...
 		* Negative / Left-Tail
 			* same as above, but reverse scores by subtracting each observation from the largest observation
 	* Robust Methods
-		* Bootstrappings
+		* Bootstrappingsle
 * Z-scores (for normally-distributed data)
 	* 99.9% of data should lie within z=[-3.29, 3.29], 99% within z=[-2.58, 2.58], and 95% within z=[-1.96, 1.96]
 	* 99.7% of data should lie within 3 standard deviations, 95% within 2 standard deviations, and 68% within 1 standard deviations
@@ -165,15 +216,49 @@ This master cheatsheet will tell you...
 	* R: `scale()`
 	* [Python: `preprocessing.scale()` from sklearn](http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler)
 
+## Multicollinarity
+
 ## Homogeneous Variance (Homoscedasticity)
 * plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
 * Levene's Test or F-Test/Variance Ratio (if p < .05, then variance is heterogeneous)
 	* R: `levene.test()` and `var.test()`
 	* Python: `scipy.stats.levene()` and [`scipy.stats.f()`](http://stackoverflow.com/questions/21494141/how-do-i-do-a-f-test-in-python)
 
-## Feature Selection
-* compare models to maximize performance metrics
-* for Regression in R, `step()` and `leaps()` do this for you
+## Feature Selection and Dimensionality Reduction
+* Why?
+	* avoid curse of dimensionality
+	* reduce risk of overfitting
+	* number of features should be less than number of observations
+
+### Feature Selection
+* get rid of redundant/irrelevant features
+* compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
+* Regression
+	* Stepwise
+		* backways tends to perform better than forward
+		* greedy, locally optimized, fast
+		* R: `step()`
+		* Python: [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
+	* All-Subsets
+		* globally optimized, slow
+		* R: `leaps()` from leaps
+
+### Dimensionality Reduction
+#### Low Variance Threshold
+* remove all features which have insufficient variance
+* R:
+* Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
+
+#### Statistical Tests
+* check the p-value to determine if an independent variable has an impact on the dependent variable
+* R:
+* Python [various functions in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
+
+#### Principle Components Analysis
+* reduces features space to vectors representing linear combination of features
+* decompose a feature space into orthogonal vectors that maintain the maximum amount of the original space's variance
+* R:
+* Python: [`PCA(n_components).fit(data).transform(data)` from sklearn.decomposition](http://scikit-learn.org/stable/modules/decomposition.html#pca)
 
 ## Nonlinear relationships
 
@@ -190,14 +275,16 @@ This master cheatsheet will tell you...
 * You can use visual indicators like scatterplots or residual plots to determine outliers and influential points. You can also use statistical metrics, given below.
 * [R: `influence.measures(model)`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/influence.measures.html)
 	* gives you standardized, studentized residuals, dfbetas, Cook's Distances, and hat values for each observation used to train the model
+* [Python: summary_table() from statsmodels.stats.outliers_influence ](http://www.statsmodels.org/0.6.1/_modules/statsmodels/stats/outliers_influence.html)
+	* contains functions for VIF, studentized residuals, dffits, dfbetas, Cook's Distance,
 
-### Outliers
+#### Outliers
 * points that fit the model poorly
 * [Studentized Residual](https://stats.stackexchange.com/questions/22653/raw-residuals-versus-standardised-residuals-versus-studentised-residuals-what)
 	* residual, divided by sample standard error
 	* R: `rstudent()`
 
-### Influential Points
+#### Influential Points
 * exert an unusually large influence ont he model's coefficients
 * [Leverage AKA Hat Value](https://en.wikipedia.org/wiki/Leverage_%28statistics%29)
 	* measures how far an observation's independent variables deviate from their mean
