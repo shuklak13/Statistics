@@ -50,19 +50,30 @@ This master cheatsheet will tell you...
 
 ## Hierarchical Linear Model
 * Multiple levels [(ex: school, district, state, country)](https://stats.stackexchange.com/questions/63621/what-is-the-difference-between-a-hierarchical-linear-regression-and-an-ordinary). For any observation, gives most weight to lowest level if large enough sample. If too small, gives more weight to the level above.
-* [NOT to be confused with Hierarchical Regression, which is just creative a successive chain of regression models adding more predictors each time](http://www.theanalysisfactor.com/confusing-statistical-term-4-hierarchical-regression-vs-hierarchical-model/)
-* R:
-* Python:
+* [NOT to be confused with Hierarchical Regression, which is just creating a successive chain of regression models adding more predictors each time](http://www.theanalysisfactor.com/confusing-statistical-term-4-hierarchical-regression-vs-hierarchical-model/)
+* [These slides] describe Hierarchical Linear Models in greater detail, and how they can be used in R.
+* R: [`lmer()`] from `lme4`
 
-## Ride Regression AKA Weight Decay AKA Tikhonov Regularization
-* [does *not* give an unbiased estimator](https://onlinecourses.science.psu.edu/stat857/node/155)
-* penalizes large coefficients
-	* tradeoff beteen penalty term and residual-sum-of-squares (better coefficients give less error)
-* good for dealing with multicollinearity
-* R:
-* Python:
+## Regularization Methods
+* penalize large coefficients to improve a model's performance
 
-## Lasso
+### [Ridge Regression AKA Weight Decay AKA Tikhonov Regularization](https://onlinecourses.science.psu.edu/stat857/node/155)
+* remedial method to alleviate multicollinarity and the negative effects of having a large number of predictors by applying a shrinkage term
+* the shrinkage is determined by the lambda attribute
+	* lambda = 0: ordinary least-squares regression
+	* lambda = 1: coefficients approach zero
+* Drawbacks
+	* unlike popular regression techniques, Ridge Regression does *not* give an unbiased estimator
+	* can actually increase residual sum of squares
+* R: [`lm.ridge()` from MASS](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/lm.ridge.html)
+* Python: [`Ridge()` from sklearn.linear_model](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)
+
+### Lasso Regression
+* sets a bound on the sum of the absolute values of the coefficients
+* sets the coefficients of insignificant variables to zero
+	* thus, Lasso is useful for performing both Regularization and Variable Selection
+* R: [`glmnet`](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+* Python: [`Lasso` in sklearn.linear_model ](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
 
 ## Accuracy Metrics
 * R^2 (Coefficient of Determination)
@@ -191,15 +202,16 @@ This master cheatsheet will tell you...
 # Preprocessing: Checking for Assumptions and Correcting Data
 * In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
 
-## Idependently and Independentically Distributed Observations
+## Identically and Independentically Distributed Observations
 * fundamental assumption of almost all statistical learning methods
 
-## Normality
+## [Test for Normality](http://interstat.statjournals.net/YEAR/2002/articles/0201001.pdf)
 * histogram to make sure there is no skew
 * QQ-plot against Normal Distribution - if straight line, normal
 * Shapiro-Wilk Test (if p < .05, then not a normal distribution)
 	* R: `shapiro.test()`
 	* Python: `scipy.stats.shapiro()`
+* R's [`nortest`](https://cran.r-project.org/web/packages/nortest/index.html) package and Python's [`statsmodels.stats`](http://www.statsmodels.org/devel/stats.html) contain a large number of normality tests.
 * Fixing Skew
 	* Transformations
 		* Positive / Right-Tail
@@ -216,9 +228,33 @@ This master cheatsheet will tell you...
 	* R: `scale()`
 	* [Python: `preprocessing.scale()` from sklearn](http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler)
 
-## Multicollinarity
+## Test for No Multicollinarity
+* How to fix autocorrelation?
+	* shrink coefficients using a technique such as Ridge Regression
 
-## Homogeneous Variance (Homoscedasticity)
+## [Test for No Autocorrelation]](http://www2.aueb.gr/users/koundouri/resees/uploads/Chapter%2007%20-%20Autocorrelation.pptx)
+* Graphical Method (Pearson's Correlation Coefficient)
+	* just calculate the correlation between two vectors - one containing Y[1:n-k], the other containing Y[k:n],
+		* where n is the number of observations
+		* and k is the order of autocorrelation (1 for autocorrelation between adjacent observations, 2 for autocorrelation between every other observation, and so on)
+* [Durbin-Watson Test](http://www.investopedia.com/terms/d/durbin-watson-statistic.asp)
+	* 2 indicates no autocorrelation, 0 indicates positive autocorrelation, and 4 indicates negative autocorrelation
+	* only for first-order observation
+	* R: [`dwtest()`](http://math.furman.edu/~dcs/courses/math47/R/library/lmtest/html/dwtest.html)
+	* Python: [`durbin_watson()` from statsmodels.stats.stattools](http://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.durbin_watson.html)
+* [Breusch-Godfrey Test]
+	* not limited to first-order observations only, unlike Durbin-Watson
+	* [has less power than Durbin-Watson](https://stats.stackexchange.com/questions/154167/why-ever-use-durbin-watson-instead-of-testing-autocorrelation)
+	* R: [`bgtest()` from lmtest](https://www.rdocumentation.org/packages/lmtest/versions/0.9-35/topics/bgtest)
+	* Python: [`acorr_breusch_godfrey()` from statsmodels.stats.diagnostic] (http://www.statsmodels.org/dev/generated/statsmodels.stats.diagnostic.acorr_breusch_godfrey.html)
+* What might cause autocorrelation?
+	* Omitted Variables: if some significant variable X is omitted from the model, and X generally increases or decreases from one observation to the next, then it will appear that current error term correlates with the previous
+	* Misspecification: if we wrongly assume that a model's shape (for example, assuming it is linear when it should actually be quadratic), then it will appear that current error term correlates with the previous
+* How to fix autocorrelation?
+	* Add a significant independent variable and see if it reduces autocorrelation
+	* Pick a model that is robust to autocorrelation
+
+## Testing for Homogeneous Variance (Homoscedasticity)
 * plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
 * Levene's Test or F-Test/Variance Ratio (if p < .05, then variance is heterogeneous)
 	* R: `levene.test()` and `var.test()`
@@ -237,6 +273,7 @@ This master cheatsheet will tell you...
 	* Stepwise
 		* backways tends to perform better than forward
 		* greedy, locally optimized, fast
+		* may perform poorly in the presence of multicollinearity
 		* R: `step()`
 		* Python: [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
 	* All-Subsets
