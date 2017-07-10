@@ -48,6 +48,14 @@ This master cheatsheet will tell you...
 	* Note that SVM regression and classification both use the same code! The function determines whether to perform regression or classification depending on whether y is continuous or categorical.
 * [Python: `LinearSVR`, `SVR`, and `NuSVR` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
+## Local Regression (LOESS and LOWESS)
+* LOWESS = LOcally WEighted Scatterplot Smoothing
+* nonparametric regression - concerned with smoothing a surface over variables; does this by fitting simpler models to local domains within the data
+* ["combines multiple regression models in a k-nearest-neighbor-based-meta-model"](https://en.wikipedia.org/wiki/Local_regression)
+* computationally complex
+* R:
+* Python:
+
 ## Hierarchical Linear Model
 * Multiple levels [(ex: school, district, state, country)](https://stats.stackexchange.com/questions/63621/what-is-the-difference-between-a-hierarchical-linear-regression-and-an-ordinary). For any observation, gives most weight to lowest level if large enough sample. If too small, gives more weight to the level above.
 * [NOT to be confused with Hierarchical Regression, which is just creating a successive chain of regression models adding more predictors each time](http://www.theanalysisfactor.com/confusing-statistical-term-4-hierarchical-regression-vs-hierarchical-model/)
@@ -184,6 +192,8 @@ This master cheatsheet will tell you...
 	* also known as AUC of ROC
 	* a curve measuring the growth of the true-positive-rate (y-axis) relative to the false-positive-rate (x-axis) as a model's threshold is reduced
 * Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
+* Cross-Validation:
+	* 
 
 ---
 
