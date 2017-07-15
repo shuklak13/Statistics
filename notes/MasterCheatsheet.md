@@ -83,7 +83,8 @@ This master cheatsheet will tell you...
 * R: [`glmnet`](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
 * Python: [`Lasso` in sklearn.linear_model ](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
 
-## Accuracy Metrics
+## Accuracy Metrics for Regression
+* RMSE (Root Mean Square Error)
 * R^2 (Coefficient of Determination)
 	* [where R is the correlation between Y and Y_hat](https://stats.stackexchange.com/questions/134167/is-there-any-difference-between-r2-and-r2)
 		* unlike r, which is the correlation between X and Y (equal for simple linear regression)
@@ -96,7 +97,10 @@ This master cheatsheet will tell you...
 	* unlike R^2, cannot be used as a standalone measure
 * F-Ratio
 	* ratio of variance the model can't explain over the variance the model can explain
-* R: `summary()` and `anova()`
+* R:
+	* `summary()`
+	* `anova()`
+	* `postResample()` from `caret()` gives RMSE and R^2
 * Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html) or [`model.fit().summary()` from statsmodel](http://www.statsmodels.org/devel/generated/statsmodels.regression.linear_model.RegressionResults.summary.html)
 
 ---
@@ -165,6 +169,7 @@ This master cheatsheet will tell you...
 
 ## Support Vector Machine
 * Assumptions
+	*
 * Advantages
 	* effective in high-dimensional data
 	* works well with both linearly and nonlinearly separable data [(nonlinearly-separable data uses the kernel trick)](https://en.wikipedia.org/wiki/Support_vector_machine#Nonlinear_classification)
@@ -178,33 +183,53 @@ This master cheatsheet will tell you...
 * [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
 * [Python: `LinearSVC`, `SVC`, and `NuSVC` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
-## Naive Bayes
-* R:
-* Python:
+## [Naive Bayes](http://sebastianraschka.com/Articles/2014_naive_bayes_1.html#3_3_multivariate)
+* Assumptions
+	* features are conditionally independent
+	* data is linearly separable (NB is a linear classifier)
+* Advantages
+	*
+* Disadvantages
+	* naive assumption is usually violated; can't capture interaction effects
+* R: [`naiveBayes()` from `e1071`](http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html)
+* Python: [various functions from `sklearn.naive_bayes()`](http://scikit-learn.org/stable/modules/naive_bayes.html)
+	* [Read this to understand the different naive bayes options in sklearn](https://www.reddit.com/r/MachineLearning/comments/2uhhbh/difference_between_binomial_multinomial_and/)
 
-## Accuracy Metrics
+### Accuracy Metrics for Classification
 * accuracy = (# correct)/(# incorrect)
 	* should be compared against the naive accuracy (blindly guessing the most common class each time)
+* confusion-matrix
+	* R: [`confusionMatrix()` from `caret`](http://topepo.github.io/caret/measuring-performance.html)
+	* Python: [`confusionMatrix()` from sklearn.metrics ](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)
 * precision = (# true positives) / (# true positives + false positives)
 * recall = (# true positives) / (# true positives + false negatives)
 * F-score = 2 \* precision \* recall / (precision + recall)
 * Area under the Receiver-Operating-Characteristic Curve
 	* also known as AUC of ROC
 	* a curve measuring the growth of the true-positive-rate (y-axis) relative to the false-positive-rate (x-axis) as a model's threshold is reduced
-* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
-* Cross-Validation:
-	* 
+* R: [`prSummary()` from `caret` gives precision, recall, F-stat, and AUC](http://topepo.github.io/caret/measuring-performance.html)
+* Python:
+* [Lift Curve](https://www.quora.com/Whats-Lift-curve)
+	* binary classification / event detection; commonly used in marketing
+	* the curve
+		* x-axis: fraction of dataset
+		* y-axis: (# events captured by model)/(# events captured by randomly selecting elements of the dataset)
+	* the significance
+		* if your model tests every element in the dataset, it will have a capture rate the same as randomly selecting elements of the dataset
+		* if your classification model is very accurate, then you should be able to capture most of the events (high recall) while testing a very small fraction of the dataset (high precision)
+	* R: http://topepo.github.io/caret/measuring-performance.html
+	* Python: 
 
 ---
 
 # Clustering
 
 ## K-Means
-* R:
+* R: [`kmeans()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kmeans.html) [(examples)](http://www.statmethods.net/advstats/cluster.html)
 * Python: [`KMeans(n_clusters)` from sklearn.cluster](http://scikit-learn.org/stable/modules/clustering.html#k-means)
 
 ## Hierarchical/Agglomerative Clustering
-* R:
+* R: [`hclust()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html) [(examples)](http://www.statmethods.net/advstats/cluster.html)
 * Python: [`AgglomerativeClustering().fit(data)` from sklearn.cluster](http://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py)
 
 ---
@@ -279,6 +304,7 @@ This master cheatsheet will tell you...
 ### Feature Selection
 * get rid of redundant/irrelevant features
 * compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
+* [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
 * Regression
 	* Stepwise
 		* backways tends to perform better than forward
@@ -293,12 +319,10 @@ This master cheatsheet will tell you...
 ### Dimensionality Reduction
 #### Low Variance Threshold
 * remove all features which have insufficient variance
-* R:
 * Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
 
 #### Statistical Tests
 * check the p-value to determine if an independent variable has an impact on the dependent variable
-* R:
 * Python [various functions in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
 
 #### Principle Components Analysis
@@ -352,3 +376,14 @@ This master cheatsheet will tell you...
 		* `dfbeta(model)[i]` returns the DFBetas for the i'th observation
 		* `dfbeta(model)[,j]` returns the DFBetas for the j'th variable
 	* [values greater than 1 or 2/sqrt(n) are probably influential points](http://www.albany.edu/faculty/kretheme/PAD705/SupportMat/DFBETA.pdf)
+
+---
+
+## Model Evaluation
+* Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
+* Parameter Tuning:
+	* R: [`train()` from `caret`](https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf)
+		* [a list of models available in `caret`](http://topepo.github.io/caret/available-models.html)
+	* Cross-Validation:
+		* R: [The 'caret' package](http://topepo.github.io/caret/model-training-and-tuning.html) [has several relevant functions](http://machinelearningmastery.com/how-to-estimate-model-accuracy-in-r-using-the-caret-package/)
+		* Python: [`cross_val_score()` from `sklearn.model_selection`](http://scikit-learn.org/stable/modules/cross_validation.html#computing-cross-validated-metrics)
