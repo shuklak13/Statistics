@@ -17,9 +17,168 @@ This master cheatsheet will tell you...
 	* sklearn - machine learning
 	* statsmodel - traditional statistics
 
+## Table of Contents
+1. Preprocessing: Checking for Assumptions and Correcting Data
+2. Regression
+3. Classification
+4. Clustering
+5. Ensemble Techniques
+6. Model Evaluation
+
 ---
 
-# Regression
+# 1. Preprocessing: Checking for Assumptions and Correcting Data
+* In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
+
+## Identically and Independentically Distributed Observations
+* fundamental assumption of almost all statistical learning methods
+
+## [Test for Normality](http://interstat.statjournals.net/YEAR/2002/articles/0201001.pdf)
+* histogram to make sure there is no skew
+* QQ-plot against Normal Distribution - if straight line, normal
+* Shapiro-Wilk Test (if p < .05, then not a normal distribution)
+	* R: `shapiro.test()`
+	* Python: `scipy.stats.shapiro()`
+* R's [`nortest`](https://cran.r-project.org/web/packages/nortest/index.html) package and Python's [`statsmodels.stats`](http://www.statsmodels.org/devel/stats.html) contain a large number of normality tests.
+* Fixing Skew
+	* Transformations
+		* Positive / Right-Tail
+			* Log, Square-Root, or Reciprocal
+				* requires data to be positive - if necessary, add a constant to all observations
+		* Negative / Left-Tail
+			* same as above, but reverse scores by subtracting each observation from the largest observation
+	* Robust Methods
+		* Bootstrapping
+* Z-scores (for normally-distributed data)
+	* 99.9% of data should lie within z=[-3.29, 3.29], 99% within z=[-2.58, 2.58], and 95% within z=[-1.96, 1.96]
+	* 99.7% of data should lie within 3 standard deviations, 95% within 2 standard deviations, and 68% within 1 standard deviations
+	* if not, your data does not follow a standard normal distribution
+	* R: `scale()`
+	* [Python: `preprocessing.scale()` from sklearn](http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler)
+
+## Test for No Multicollinarity
+* Variance Inflation Factor
+*
+* How to fix autocorrelation?
+	* shrink coefficients using a technique such as Ridge Regression
+
+## [Test for No Autocorrelation]](http://www2.aueb.gr/users/koundouri/resees/uploads/Chapter%2007%20-%20Autocorrelation.pptx)
+* Graphical Method (Pearson's Correlation Coefficient)
+	* just calculate the correlation between two vectors - one containing Y[1:n-k], the other containing Y[k:n],
+		* where n is the number of observations
+		* and k is the order of autocorrelation (1 for autocorrelation between adjacent observations, 2 for autocorrelation between every other observation, and so on)
+* [Durbin-Watson Test](http://www.investopedia.com/terms/d/durbin-watson-statistic.asp)
+	* 2 indicates no autocorrelation, 0 indicates positive autocorrelation, and 4 indicates negative autocorrelation
+	* only for first-order observation
+	* R: [`dwtest()`](http://math.furman.edu/~dcs/courses/math47/R/library/lmtest/html/dwtest.html)
+	* Python: [`durbin_watson()` from statsmodels.stats.stattools](http://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.durbin_watson.html)
+* [Breusch-Godfrey Test]
+	* not limited to first-order observations only, unlike Durbin-Watson
+	* [has less power than Durbin-Watson](https://stats.stackexchange.com/questions/154167/why-ever-use-durbin-watson-instead-of-testing-autocorrelation)
+	* R: [`bgtest()` from lmtest](https://www.rdocumentation.org/packages/lmtest/versions/0.9-35/topics/bgtest)
+	* Python: [`acorr_breusch_godfrey()` from statsmodels.stats.diagnostic] (http://www.statsmodels.org/dev/generated/statsmodels.stats.diagnostic.acorr_breusch_godfrey.html)
+* What might cause autocorrelation?
+	* Omitted Variables: if some significant variable X is omitted from the model, and X generally increases or decreases from one observation to the next, then it will appear that current error term correlates with the previous
+	* Misspecification: if we wrongly assume that a model's shape (for example, assuming it is linear when it should actually be quadratic), then it will appear that current error term correlates with the previous
+* How to fix autocorrelation?
+	* Add a significant independent variable and see if it reduces autocorrelation
+	* Pick a model that is robust to autocorrelation
+
+## Testing for Homogeneous Variance (Homoscedasticity)
+* plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
+* Levene's Test or F-Test/Variance Ratio (if p < .05, then variance is heterogeneous)
+	* R: `levene.test()` and `var.test()`
+	* Python: `scipy.stats.levene()` and [`scipy.stats.f()`](http://stackoverflow.com/questions/21494141/how-do-i-do-a-f-test-in-python)
+
+## Feature Selection and Dimensionality Reduction
+* Why?
+	* avoid curse of dimensionality
+	* reduce risk of overfitting
+	* number of features should be less than number of observations
+
+### Feature Selection
+* get rid of redundant/irrelevant features
+* compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
+* [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
+* Regression
+	* Stepwise
+		* 2 types: backwards and forwards
+			* backwards tends to perform better than forward
+		* greedy, locally optimized, fast
+		* may perform poorly in the presence of multicollinearity
+		*
+		* R:
+			* [`step()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/step.html) is commonly used on for R's regression models
+			*
+		* Python: [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
+	* All-Subsets
+		* globally optimized, slow
+		* R: `leaps()` from leaps
+
+### Dimensionality Reduction
+#### Low Variance Threshold
+* remove all features which have insufficient variance
+* Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
+
+#### Statistical Tests
+* check the p-value to determine if an independent variable has an impact on the dependent variable
+* Python [various functions in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
+
+#### Principle Components Analysis
+* reduces features space to vectors representing linear combination of features
+* decompose a feature space into orthogonal vectors that maintain the maximum amount of the original space's variance
+* R:
+* Python: [`PCA(n_components).fit(data).transform(data)` from sklearn.decomposition](http://scikit-learn.org/stable/modules/decomposition.html#pca)
+
+## Nonlinear relationships
+
+## The Problem with Hypothesis Testing
+* for large enough samples, alternate hypothesis will always be true
+* because of this, we shouldn't rely exclusively on hypothesis testing to determine whether our data satisfies the model's assumptions
+
+## Outliers and Influential Points
+* These should be removed **if** you can conclude that they are data entry errors, or they come from a different population than the rest of the sample
+* Investigate potential outliers/influential points using multiple metrics - don't make hasty conclusions
+* Note that transformations can modify outliers/influential points! For maximum coverage, look at outliers/influential points before and after you transform.
+* [Python: `influence_plot(prestige_model, criterion)` from `statsmodels.graphics`](http://www.statsmodels.org/0.8.0/examples/notebooks/generated/regression_plots.html)
+	* plots the influence of each observation, using the specified criterion (Cook's Distance or DFFITS)
+* You can use visual indicators like scatterplots or residual plots to determine outliers and influential points. You can also use statistical metrics, given below.
+* [R: `influence.measures(model)`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/influence.measures.html)
+	* gives you standardized, studentized residuals, dfbetas, Cook's Distances, and hat values for each observation used to train the model
+* [Python: summary_table() from statsmodels.stats.outliers_influence ](http://www.statsmodels.org/0.6.1/_modules/statsmodels/stats/outliers_influence.html)
+	* contains functions for VIF (Variance Inflation Factor), studentized residuals, dffits, dfbetas, Cook's Distance,
+
+#### Outliers
+* points that fit the model poorly
+* [Studentized Residual](https://stats.stackexchange.com/questions/22653/raw-residuals-versus-standardised-residuals-versus-studentised-residuals-what)
+	* residual, divided by sample standard error
+	* R: `rstudent()`
+
+#### Influential Points
+* exert an unusually large influence ont he model's coefficients
+* [Leverage AKA Hat Value](https://en.wikipedia.org/wiki/Leverage_%28statistics%29)
+	* measures how far an observation's independent variables deviate from their mean
+	* if an observation is more than 2x or 3x of the average leverage `(k+1)/N`, then it is probably an influential point
+	* R: `hatvalues()`
+* [DFFITS](https://en.wikipedia.org/wiki/DFFITS)
+	* the difference in the prediction of an observation x, between the model that includes x, and the model that does not include x
+	* equal to the studentized residual, scaled by leverage
+	* R: `dffits()`
+* Cook's Distance
+	* measures how a particular observation influences the predictions of *all* observations in the training set (unlike DFFITS, which is only measures the influence on the same observation)
+	* conceptually equivalent to DFFITS
+	* [if greater than 1 or 4/N, probably an influential point](https://en.wikipedia.org/wiki/Cook%27s_distance#Detecting_highly_influential_observations)
+	* R: `cooks.distance()`
+* DFBeta
+	* the influence that one particular observation had on one particular predictor
+	* R: `dfbeta(model)` returns the DFBeta matrix
+		* `dfbeta(model)[i]` returns the DFBetas for the i'th observation
+		* `dfbeta(model)[,j]` returns the DFBetas for the j'th variable
+	* [values greater than 1 or 2/sqrt(n) are probably influential points](http://www.albany.edu/faculty/kretheme/PAD705/SupportMat/DFBETA.pdf)
+
+---
+
+# 2. Regression
 ## Linear Regression
 ### Ordinary Least-Squares Linear Regression
 * R: `lm(y ~ x)`
@@ -105,7 +264,7 @@ This master cheatsheet will tell you...
 
 ---
 
-# Classification
+# 3. Classification
 ## Logistic Regression
 * Assumptions:
 * Advantages:
@@ -234,7 +393,7 @@ This master cheatsheet will tell you...
 
 ---
 
-# Clustering
+# 4. Clustering
 
 ## K-Means
 * R: [`kmeans()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kmeans.html) [(examples)](http://www.statmethods.net/advstats/cluster.html)
@@ -246,157 +405,19 @@ This master cheatsheet will tell you...
 
 ---
 
-# Preprocessing: Checking for Assumptions and Correcting Data
-* In general, it's almost always assumed that the quantity of data exceeds the quantity of features. Most methods will be ineffective if this is not true, and and some methods may have impossible computations.
-
-## Identically and Independentically Distributed Observations
-* fundamental assumption of almost all statistical learning methods
-
-## [Test for Normality](http://interstat.statjournals.net/YEAR/2002/articles/0201001.pdf)
-* histogram to make sure there is no skew
-* QQ-plot against Normal Distribution - if straight line, normal
-* Shapiro-Wilk Test (if p < .05, then not a normal distribution)
-	* R: `shapiro.test()`
-	* Python: `scipy.stats.shapiro()`
-* R's [`nortest`](https://cran.r-project.org/web/packages/nortest/index.html) package and Python's [`statsmodels.stats`](http://www.statsmodels.org/devel/stats.html) contain a large number of normality tests.
-* Fixing Skew
-	* Transformations
-		* Positive / Right-Tail
-			* Log, Square-Root, or Reciprocal
-				* requires data to be positive - if necessary, add a constant to all observations
-		* Negative / Left-Tail
-			* same as above, but reverse scores by subtracting each observation from the largest observation
-	* Robust Methods
-		* Bootstrapping
-* Z-scores (for normally-distributed data)
-	* 99.9% of data should lie within z=[-3.29, 3.29], 99% within z=[-2.58, 2.58], and 95% within z=[-1.96, 1.96]
-	* 99.7% of data should lie within 3 standard deviations, 95% within 2 standard deviations, and 68% within 1 standard deviations
-	* if not, your data does not follow a standard normal distribution
-	* R: `scale()`
-	* [Python: `preprocessing.scale()` from sklearn](http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-scaler)
-
-## Test for No Multicollinarity
-* How to fix autocorrelation?
-	* shrink coefficients using a technique such as Ridge Regression
-
-## [Test for No Autocorrelation]](http://www2.aueb.gr/users/koundouri/resees/uploads/Chapter%2007%20-%20Autocorrelation.pptx)
-* Graphical Method (Pearson's Correlation Coefficient)
-	* just calculate the correlation between two vectors - one containing Y[1:n-k], the other containing Y[k:n],
-		* where n is the number of observations
-		* and k is the order of autocorrelation (1 for autocorrelation between adjacent observations, 2 for autocorrelation between every other observation, and so on)
-* [Durbin-Watson Test](http://www.investopedia.com/terms/d/durbin-watson-statistic.asp)
-	* 2 indicates no autocorrelation, 0 indicates positive autocorrelation, and 4 indicates negative autocorrelation
-	* only for first-order observation
-	* R: [`dwtest()`](http://math.furman.edu/~dcs/courses/math47/R/library/lmtest/html/dwtest.html)
-	* Python: [`durbin_watson()` from statsmodels.stats.stattools](http://www.statsmodels.org/devel/generated/statsmodels.stats.stattools.durbin_watson.html)
-* [Breusch-Godfrey Test]
-	* not limited to first-order observations only, unlike Durbin-Watson
-	* [has less power than Durbin-Watson](https://stats.stackexchange.com/questions/154167/why-ever-use-durbin-watson-instead-of-testing-autocorrelation)
-	* R: [`bgtest()` from lmtest](https://www.rdocumentation.org/packages/lmtest/versions/0.9-35/topics/bgtest)
-	* Python: [`acorr_breusch_godfrey()` from statsmodels.stats.diagnostic] (http://www.statsmodels.org/dev/generated/statsmodels.stats.diagnostic.acorr_breusch_godfrey.html)
-* What might cause autocorrelation?
-	* Omitted Variables: if some significant variable X is omitted from the model, and X generally increases or decreases from one observation to the next, then it will appear that current error term correlates with the previous
-	* Misspecification: if we wrongly assume that a model's shape (for example, assuming it is linear when it should actually be quadratic), then it will appear that current error term correlates with the previous
-* How to fix autocorrelation?
-	* Add a significant independent variable and see if it reduces autocorrelation
-	* Pick a model that is robust to autocorrelation
-
-## Testing for Homogeneous Variance (Homoscedasticity)
-* plotting y values should show that the variance of the residuals' distance from the regression line does not change with respect to x
-* Levene's Test or F-Test/Variance Ratio (if p < .05, then variance is heterogeneous)
-	* R: `levene.test()` and `var.test()`
-	* Python: `scipy.stats.levene()` and [`scipy.stats.f()`](http://stackoverflow.com/questions/21494141/how-do-i-do-a-f-test-in-python)
-
-## Feature Selection and Dimensionality Reduction
-* Why?
-	* avoid curse of dimensionality
-	* reduce risk of overfitting
-	* number of features should be less than number of observations
-
-### Feature Selection
-* get rid of redundant/irrelevant features
-* compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
-* [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
-* Regression
-	* Stepwise
-		* 2 types: backwards and forwards
-			* backwards tends to perform better than forward
-		* greedy, locally optimized, fast
-		* may perform poorly in the presence of multicollinearity
-		* R: `step()`
-		* Python: [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
-	* All-Subsets
-		* globally optimized, slow
-		* R: `leaps()` from leaps
-
-### Dimensionality Reduction
-#### Low Variance Threshold
-* remove all features which have insufficient variance
-* Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
-
-#### Statistical Tests
-* check the p-value to determine if an independent variable has an impact on the dependent variable
-* Python [various functions in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
-
-#### Principle Components Analysis
-* reduces features space to vectors representing linear combination of features
-* decompose a feature space into orthogonal vectors that maintain the maximum amount of the original space's variance
-* R:
-* Python: [`PCA(n_components).fit(data).transform(data)` from sklearn.decomposition](http://scikit-learn.org/stable/modules/decomposition.html#pca)
-
-## Nonlinear relationships
-
-## The Problem with Hypothesis Testing
-* for large enough samples, alternate hypothesis will always be true
-* because of this, we shouldn't rely exclusively on hypothesis testing to determine whether our data satisfies the model's assumptions
-
-## Outliers and Influential Points
-* These should be removed **if** you can conclude that they are data entry errors, or they come from a different population than the rest of the sample
-* Investigate potential outliers/influential points using multiple metrics - don't make hasty conclusions
-* Note that transformations can modify outliers/influential points! For maximum coverage, look at outliers/influential points before and after you transform.
-* [Python: `influence_plot(prestige_model, criterion)` from `statsmodels.graphics`](http://www.statsmodels.org/0.8.0/examples/notebooks/generated/regression_plots.html)
-	* plots the influence of each observation, using the specified criterion (Cook's Distance or DFFITS)
-* You can use visual indicators like scatterplots or residual plots to determine outliers and influential points. You can also use statistical metrics, given below.
-* [R: `influence.measures(model)`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/influence.measures.html)
-	* gives you standardized, studentized residuals, dfbetas, Cook's Distances, and hat values for each observation used to train the model
-* [Python: summary_table() from statsmodels.stats.outliers_influence ](http://www.statsmodels.org/0.6.1/_modules/statsmodels/stats/outliers_influence.html)
-	* contains functions for VIF, studentized residuals, dffits, dfbetas, Cook's Distance,
-
-#### Outliers
-* points that fit the model poorly
-* [Studentized Residual](https://stats.stackexchange.com/questions/22653/raw-residuals-versus-standardised-residuals-versus-studentised-residuals-what)
-	* residual, divided by sample standard error
-	* R: `rstudent()`
-
-#### Influential Points
-* exert an unusually large influence ont he model's coefficients
-* [Leverage AKA Hat Value](https://en.wikipedia.org/wiki/Leverage_%28statistics%29)
-	* measures how far an observation's independent variables deviate from their mean
-	* if an observation is more than 2x or 3x of the average leverage `(k+1)/N`, then it is probably an influential point
-	* R: `hatvalues()`
-* [DFFITS](https://en.wikipedia.org/wiki/DFFITS)
-	* the difference in the prediction of an observation x, between the model that includes x, and the model that does not include x
-	* equal to the studentized residual, scaled by leverage
-	* R: `dffits()`
-* Cook's Distance
-	* measures how a particular observation influences the predictions of *all* observations in the training set (unlike DFFITS, which is only measures the influence on the same observation)
-	* conceptually equivalent to DFFITS
-	* [if greater than 1 or 4/N, probably an influential point](https://en.wikipedia.org/wiki/Cook%27s_distance#Detecting_highly_influential_observations)
-	* R: `cooks.distance()`
-* DFBeta
-	* the influence that one particular observation had on one particular predictor
-	* R: `dfbeta(model)` returns the DFBeta matrix
-		* `dfbeta(model)[i]` returns the DFBetas for the i'th observation
-		* `dfbeta(model)[,j]` returns the DFBetas for the j'th variable
-	* [values greater than 1 or 2/sqrt(n) are probably influential points](http://www.albany.edu/faculty/kretheme/PAD705/SupportMat/DFBETA.pdf)
+# 5. Ensemble Methods
 
 ---
 
-## Model Evaluation
+# 6. Model Evaluation
 * Python: [scikit-learn](http://scikit-learn.org/stable/modules/model_evaluation.html)
 * Parameter Tuning:
 	* R: [`train()` from `caret`](https://cran.r-project.org/web/packages/caret/vignettes/caret.pdf)
 		* [a list of models available in `caret`](http://topepo.github.io/caret/available-models.html)
-	* Cross-Validation:
+	* Cross-Validation
 		* R: [The 'caret' package](http://topepo.github.io/caret/model-training-and-tuning.html) [has several relevant functions](http://machinelearningmastery.com/how-to-estimate-model-accuracy-in-r-using-the-caret-package/)
 		* Python: [`cross_val_score()` from `sklearn.model_selection`](http://scikit-learn.org/stable/modules/cross_validation.html#computing-cross-validated-metrics)
+	* Bootstrapping
+		* AKA sampling-with-replacement; the training and/or testing data are bootstrapped from the original dataset
+		* Assumptions
+			* the original data represents the population distribution
