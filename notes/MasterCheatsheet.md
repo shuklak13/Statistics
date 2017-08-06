@@ -209,16 +209,28 @@ This master cheatsheet will tell you...
 	* a curve measuring the growth of the true-positive-rate (y-axis) relative to the false-positive-rate (x-axis) as a model's threshold is reduced
 * R: [`prSummary()` from `caret` gives precision, recall, F-stat, and AUC](http://topepo.github.io/caret/measuring-performance.html)
 * Python:
-* [Lift Curve](https://www.quora.com/Whats-Lift-curve)
-	* binary classification / event detection; commonly used in marketing
-	* the curve
+* [Lift](http://www.kdnuggets.com/2016/03/lift-analysis-data-scientist-secret-weapon.html)
+	* metric to evaluate a model's ability to identify samples from a population with a high response rate (true positive rate)
+		* [analogous to precision](https://en.wikipedia.org/wiki/Lift_(data_mining))
+		* if a model is able to capture most "true events" in a population while testing a relatively small portion of the population, then it is a good model, because you don't waste time testing every individual in the population
+	* lift score = ( rate in sample / rate in population )
+	* [the curve](https://www.quora.com/Whats-Lift-curve)
 		* x-axis: fraction of dataset
 		* y-axis: (# events captured by model)/(# events captured by randomly selecting elements of the dataset)
 	* the significance
 		* if your model tests every element in the dataset, it will have a capture rate the same as randomly selecting elements of the dataset
-		* if your classification model is very accurate, then you should be able to capture most of the events (high recall) while testing a very small fraction of the dataset (high precision)
-	* R: http://topepo.github.io/caret/measuring-performance.html
-	* Python: 
+		* if your binary classification model is very accurate, then you should be able to capture most of the events (high recall) while testing a very small fraction of the dataset (high precision)
+	* R: [`lift` from `caret`] (http://topepo.github.io/caret/measuring-performance.html)
+	* Python: [`lift.score()` from `mlxtend.evaluate`](https://rasbt.github.io/mlxtend/user_guide/evaluate/lift_score/)
+* [Cohen's Kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa)
+	* a measure of agreement of two classifiers
+	* `(p_0 - p_e)/(1 - p_e)`
+		* `p_e` is the probability of the two classifiers randomly selecting the same category, if the two classifiers were independent of each other
+		* `p_0` is the percentage of data actually classified the same by the two classifiers
+	* There is also a variation to Cohen's Kappa, known as Weighted Cohen's Kappa, which weighs classifications disagreements based on how strong the disagreement is.
+		* Ex: "none" vs "a lot" is a bigger disagreement than "some" vs "a lot"
+	* R: [`cohen.kappa()` from `psych`](http://www.personality-project.org/r/html/kappa.html)
+	* Python: [`cohen_kappa_score()` from `sklearn.metrics`](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html)
 
 ---
 
@@ -255,7 +267,7 @@ This master cheatsheet will tell you...
 		* Negative / Left-Tail
 			* same as above, but reverse scores by subtracting each observation from the largest observation
 	* Robust Methods
-		* Bootstrappingsle
+		* Bootstrapping
 * Z-scores (for normally-distributed data)
 	* 99.9% of data should lie within z=[-3.29, 3.29], 99% within z=[-2.58, 2.58], and 95% within z=[-1.96, 1.96]
 	* 99.7% of data should lie within 3 standard deviations, 95% within 2 standard deviations, and 68% within 1 standard deviations
@@ -307,7 +319,8 @@ This master cheatsheet will tell you...
 * [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
 * Regression
 	* Stepwise
-		* backways tends to perform better than forward
+		* 2 types: backwards and forwards
+			* backwards tends to perform better than forward
 		* greedy, locally optimized, fast
 		* may perform poorly in the presence of multicollinearity
 		* R: `step()`
