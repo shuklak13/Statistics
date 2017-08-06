@@ -1,3 +1,63 @@
+# Table of Contents
+
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Table of Contents](#table-of-contents)
+- [What's this going to tell me?](#whats-this-going-to-tell-me)
+	- [Python vs R](#python-vs-r)
+- [1. Preprocessing: Checking for Assumptions and Correcting Data](#1-preprocessing-checking-for-assumptions-and-correcting-data)
+	- [Identically and Independentically Distributed Observations](#identically-and-independentically-distributed-observations)
+	- [[Test for Normality](http://interstat.statjournals.net/YEAR/2002/articles/0201001.pdf)](#test-for-normalityhttpinterstatstatjournalsnetyear2002articles0201001pdf)
+	- [Test for No Multicollinarity](#test-for-no-multicollinarity)
+	- [[Test for No Autocorrelation]](http://www2.aueb.gr/users/koundouri/resees/uploads/Chapter%2007%20-%20Autocorrelation.pptx)](#test-for-no-autocorrelationhttpwww2auebgruserskoundourireseesuploadschapter200720-20autocorrelationpptx)
+	- [Testing for Homogeneous Variance (Homoscedasticity)](#testing-for-homogeneous-variance-homoscedasticity)
+	- [Feature Selection and Dimensionality Reduction](#feature-selection-and-dimensionality-reduction)
+		- [Feature Selection](#feature-selection)
+		- [Dimensionality Reduction](#dimensionality-reduction)
+			- [Low Variance Threshold](#low-variance-threshold)
+			- [Statistical Tests](#statistical-tests)
+			- [Principle Components Analysis](#principle-components-analysis)
+	- [Nonlinear relationships](#nonlinear-relationships)
+	- [The Problem with Hypothesis Testing](#the-problem-with-hypothesis-testing)
+	- [Outliers and Influential Points](#outliers-and-influential-points)
+		- [Outliers](#outliers)
+		- [Influential Points](#influential-points)
+- [2. Regression](#2-regression)
+	- [Linear Regression](#linear-regression)
+		- [Ordinary Least-Squares Linear Regression](#ordinary-least-squares-linear-regression)
+		- [Robust Linear Regression](#robust-linear-regression)
+		- [Polynomial Least-Squares Regression](#polynomial-least-squares-regression)
+	- [Decision Tree Regression](#decision-tree-regression)
+		- [Random Decision Forest Regression](#random-decision-forest-regression)
+	- [Neighbor Regression](#neighbor-regression)
+	- [SVM Regression](#svm-regression)
+	- [Local Regression (LOESS and LOWESS)](#local-regression-loess-and-lowess)
+	- [Hierarchical Linear Model](#hierarchical-linear-model)
+	- [Regularization Methods](#regularization-methods)
+		- [[Ridge Regression AKA Weight Decay AKA Tikhonov Regularization](https://onlinecourses.science.psu.edu/stat857/node/155)](#ridge-regression-aka-weight-decay-aka-tikhonov-regularizationhttpsonlinecoursessciencepsuedustat857node155)
+		- [Lasso Regression](#lasso-regression)
+	- [Accuracy Metrics for Regression](#accuracy-metrics-for-regression)
+- [3. Classification](#3-classification)
+	- [Logistic Regression](#logistic-regression)
+	- [Decision Trees](#decision-trees)
+		- [Random Decision Forests](#random-decision-forests)
+	- [Linear Discriminant Analysis and Quadratic Discriminant Analysis](#linear-discriminant-analysis-and-quadratic-discriminant-analysis)
+	- [K-Nearest Neighbors](#k-nearest-neighbors)
+	- [Support Vector Machine](#support-vector-machine)
+	- [[Naive Bayes](http://sebastianraschka.com/Articles/2014_naive_bayes_1.html#3_3_multivariate)](#naive-bayeshttpsebastianraschkacomarticles2014naivebayes1html33multivariate)
+		- [Accuracy Metrics for Classification](#accuracy-metrics-for-classification)
+- [4. Clustering](#4-clustering)
+	- [K-Means](#k-means)
+	- [Hierarchical/Agglomerative Clustering](#hierarchicalagglomerative-clustering)
+- [5. [Ensemble Methods](https://en.wikipedia.org/wiki/Ensemble_learning#Bucket_of_models)](#5-ensemble-methodshttpsenwikipediaorgwikiensemblelearningbucketofmodels)
+	- [Bagging (AKA Bootstrap AGGregatING)](#bagging-aka-bootstrap-aggregating)
+	- [[Boosting](https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29)](#boostinghttpsenwikipediaorgwikiboosting28machinelearning29)
+	- [[Bucket of Models](https://www.quora.com/What-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)](#bucket-of-modelshttpswwwquoracomwhat-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)
+	- [[Stacking and Blending](https://mlwave.com/kaggle-ensembling-guide/)](#stacking-and-blendinghttpsmlwavecomkaggle-ensembling-guide)
+- [6. Model Evaluation](#6-model-evaluation)
+
+<!-- /TOC -->
+
 # What's this going to tell me?
 This master cheatsheet will tell you...
 
@@ -16,14 +76,6 @@ This master cheatsheet will tell you...
 	* pandas - data.frame
 	* sklearn - machine learning
 	* statsmodel - traditional statistics
-
-## Table of Contents
-1. Preprocessing: Checking for Assumptions and Correcting Data
-2. Regression
-3. Classification
-4. Clustering
-5. Ensemble Methods
-6. Model Evaluation
 
 ---
 
@@ -148,13 +200,13 @@ This master cheatsheet will tell you...
 * [Python: summary_table() from statsmodels.stats.outliers_influence ](http://www.statsmodels.org/0.6.1/_modules/statsmodels/stats/outliers_influence.html)
 	* contains functions for VIF (Variance Inflation Factor), studentized residuals, dffits, dfbetas, Cook's Distance,
 
-#### Outliers
+### Outliers
 * points that fit the model poorly
 * [Studentized Residual](https://stats.stackexchange.com/questions/22653/raw-residuals-versus-standardised-residuals-versus-studentised-residuals-what)
 	* residual, divided by sample standard error
 	* R: `rstudent()`
 
-#### Influential Points
+### Influential Points
 * exert an unusually large influence ont he model's coefficients
 * [Leverage AKA Hat Value](https://en.wikipedia.org/wiki/Leverage_%28statistics%29)
 	* measures how far an observation's independent variables deviate from their mean
