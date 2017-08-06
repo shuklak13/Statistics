@@ -22,7 +22,7 @@ This master cheatsheet will tell you...
 2. Regression
 3. Classification
 4. Clustering
-5. Ensemble Techniques
+5. Ensemble Methods
 6. Model Evaluation
 
 ---
@@ -405,7 +405,63 @@ This master cheatsheet will tell you...
 
 ---
 
-# 5. Ensemble Methods
+# 5. [Ensemble Methods](https://en.wikipedia.org/wiki/Ensemble_learning#Bucket_of_models)
+* Voting/Averaging
+	* the most simple of ensemble methods - simple take the mode (for classification) or mean (for regression)
+	* Rank Averaging
+		* like averaging, but average based on rank instead of predicted value
+		* this should reduce the problem where different models may have different variances or scales
+* Bootstrapping AKA Sampling-with-Replacement
+	* not an ensemble method by itself, but used as the sampling method for Bagging and Boosting ensemble methods
+	* Assumptions
+		* original sample data represents the population distribution
+* Stability
+	* if a model's output does not significantly change when new input is added
+	* Ex: decision trees are not stable, but KNN is
+* [Correlation](https://mlwave.com/kaggle-ensembling-guide/)
+	* It's often better to ensemble very different models with good accuracy on different sections of the population, rather than similar models with the best accuracy on overlapping sections of the population
+	* You can do this by picking models with a relatively low Pearson correlation
+* [Weight](https://mlwave.com/kaggle-ensembling-guide/)
+	* more accurate models should be given greater weight in the final prediction
+* [Classifiers with Regressors and Vice-Versa](https://mlwave.com/kaggle-ensembling-guide/)
+	* with ensemble methods, you can use classifiers as features for regression models, or regression models as features for classifiers
+
+## Bagging (AKA Bootstrap AGGregatING)
+* Voting/Averaging, but each model is trained on a bootstrapped sample
+* Each record and model has equal weight
+	* because of this, models can run in parallel, allowing for faster aggregation than Boosting
+* Pros
+	* improves stability and accuracy, while reducing variance and overfitting
+* Cons
+	* Degrades performance on stable algorithms
+
+## [Boosting](https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29)
+* Similar to Bagging, but instead of training every model independently (and in parallel), the models are trained in sequence to give greater weight to the records predicted incorrectly by previous models
+* Voting/Averaging is weighted based on the performance of each model
+* most common implementation is [Adaboost](https://en.wikipedia.org/wiki/AdaBoost)
+* another popular (and very powerful) implementation is Extreme Gradient Boosting, [available in R, Python, Scala, and Julia](http://xgboost.readthedocs.io/en/latest/get_started/index.html)
+
+## [Bucket of Models](https://www.quora.com/What-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)
+* many variations
+* Regression Ensemble
+	* use a regression model that takes the output of other models as inputs, and returns a result that is the final prediction
+* Classification Ensemble
+	* use a classification model to determine which model to use for any given input in a regression problem
+		* each model is a class, and the correct class is whichever model gives the best prediction of the independent variable
+
+## [Stacking and Blending](https://mlwave.com/kaggle-ensembling-guide/)
+* for classification
+* both algorithms have similar performance
+* Stacking
+	* split the training set, and train a classifier on each split, testing those classifiers on the entire dataset. Use the output probabilities from each classifier as features to train a new classifier.
+* Blending
+	* similar to stacking, except that the final model is trained on only a small held-out subsample instead of on the original training set.
+	* Pros
+		* you don't share data between the classifier models and the ensemble model
+	* Cons
+		* you're training on a smaller set of data
+* Implementations
+	* [Logistic Regression in Python](https://github.com/emanuele/kaggle_pbr/blob/master/blend.py)
 
 ---
 
@@ -417,7 +473,3 @@ This master cheatsheet will tell you...
 	* Cross-Validation
 		* R: [The 'caret' package](http://topepo.github.io/caret/model-training-and-tuning.html) [has several relevant functions](http://machinelearningmastery.com/how-to-estimate-model-accuracy-in-r-using-the-caret-package/)
 		* Python: [`cross_val_score()` from `sklearn.model_selection`](http://scikit-learn.org/stable/modules/cross_validation.html#computing-cross-validated-metrics)
-	* Bootstrapping
-		* AKA sampling-with-replacement; the training and/or testing data are bootstrapped from the original dataset
-		* Assumptions
-			* the original data represents the population distribution
