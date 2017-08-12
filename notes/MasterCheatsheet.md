@@ -152,29 +152,39 @@ This master cheatsheet will tell you...
 * get rid of redundant/irrelevant features
 * compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
 * [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
-* Regression
-	* Stepwise
-		* 2 types: backwards and forwards
-			* backwards tends to perform better than forward
-		* greedy, locally optimized, fast
-		* may perform poorly in the presence of multicollinearity
-		*
-		* R:
-			* [`step()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/step.html) is commonly used on for R's regression models
-			*
-		* Python: [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
-	* All-Subsets
-		* globally optimized, slow
-		* R: `leaps()` from leaps
 
-### Dimensionality Reduction
+#### Recursive/Stepwise
+* 2 types: backwards and forwards
+	* backwards tends to perform better than forward
+* greedy, locally optimized, fast
+* may perform poorly in the presence of multicollinearity
+* R:
+	* [`step()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/step.html) is commonly used on for R's regression models
+	* [`rfeIter()` and `rfe()` (for "recursive feature selection") from the `caret` package](http://topepo.github.io/caret/recursive-feature-elimination.html) implements backwards stepwise feature selection for any model
+		*  `rfe()` tests on a resampled dataset (via cross-validation)
+* Python:
+	* [`RFE()` and `RFECV()` from `sklearn.feature_selection` ](http://scikit-learn.org/stable/modules/feature_selection.html#recursive-feature-elimination) correlate to R's `rfeIter()` and `rfe()`, respectively
+	* [here's a forward stepwise regression function for `statsmodel`](http://planspace.org/20150423-forward_selection_with_statsmodels/)
+
+#### All-Subsets
+* similar to recursive, but instead of growing/shrinking your set of variables, you test the performance of all possible subsets of variables
+* globally optimized, but very slow
+* R: `leaps()` from `leaps`
+
+#### Statistical Tests / Univariate Filters
+* check the p-value of a testto determine if an independent variable has an impact on the dependent variable
+* R: `sbf()`(http://topepo.github.io/caret/feature-selection-using-univariate-filters.html) (for "selection by filter") from the `caret` package
+* Python [various functions, including `SelectKBest()` and `SelectPercentile()` in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
+
 #### Low Variance Threshold
 * remove all features which have insufficient variance
 * Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
 
-#### Statistical Tests
-* check the p-value to determine if an independent variable has an impact on the dependent variable
-* Python [various functions in sklearn.feature_selection] (http://scikit-learn.org/stable/modules/feature_selection.html#univariate-feature-selection)
+#### Genetic Algorithmss
+* create models and compute their "fitness" values - those with the best fitness values are combined randomly and given random mutations to make new models
+*
+
+### Dimensionality Reduction
 
 #### Principle Components Analysis
 * reduces features space to vectors representing linear combination of features
@@ -274,25 +284,43 @@ This master cheatsheet will tell you...
 * R: [`lmer()`] from `lme4`
 
 ## Regularization Methods
-* penalize large coefficients to improve a model's performance
+* remedial methods that penalize large coefficients and alleviate multicollinarity by applying a shrinkage term to coefficients
+* increase bias, but decrease variance of the estimator
 
 ### [Ridge Regression AKA Weight Decay AKA Tikhonov Regularization](https://onlinecourses.science.psu.edu/stat857/node/155)
-* remedial method to alleviate multicollinarity and the negative effects of having a large number of predictors by applying a shrinkage term
+* uses the L2 penalty function (squared difference)
 * the shrinkage is determined by the lambda attribute
 	* lambda = 0: ordinary least-squares regression
 	* lambda = 1: coefficients approach zero
-* Drawbacks
-	* unlike popular regression techniques, Ridge Regression does *not* give an unbiased estimator
-	* can actually increase residual sum of squares
 * R: [`lm.ridge()` from MASS](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/lm.ridge.html)
 * Python: [`Ridge()` from sklearn.linear_model](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)
 
-### Lasso Regression
-* sets a bound on the sum of the absolute values of the coefficients
-* sets the coefficients of insignificant variables to zero
-	* thus, Lasso is useful for performing both Regularization and Variable Selection
-* R: [`glmnet`](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+### [Lasso Regression](https://en.wikipedia.org/wiki/Lasso_(statistics))
+* uses the L1 penalty function (absolute difference)
+* like with Ridge, the shrinkage is determined by the lambda attribute
+* in addition to Regularization, Lasso can also be used for Variable Selection
+	* sufficiently small coefficients are set to zero
+	* this is an advantage Lasso has over Ridge (Ridge can shrink coefficients, but never sets them to zero)
+	* however, this may be undesirable in the "large p, small n" case (many variables, small sample) because the # of selected variables is capped at the size of your sample
+	* Multicollinearity
+		* as a consequence, Lasso will generally keep only one from a set of collinear variables (while Ridge will keep all and shrink their coefficients instead)
+* Lagrange: minimize the average squared error, under the constraint that the sum of the magnitude of the coefficients is less than some parameter
+* R: [`glmnet()` in `glmnet`](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+	* returns multiple models for different lambda values
+	* use `cv.glmnet(x, y)$lambda.min` to find the optimal lambda value via cross-validation
 * Python: [`Lasso` in sklearn.linear_model ](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
+
+### [Elastic Net](https://en.wikipedia.org/wiki/Elastic_net_regularization)
+* uses both L1 and L2 penalty functions
+* R:
+* Python:
+
+### [Comparison between L1 and L2 Regularization](http://www.chioka.in/differences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares/)
+* L1 is more Stable
+	* Because L2 squares the error term, outliers have much greater effect on the curve
+* L2 is more Robust
+	* Because L1 has only one degree of freedom, changes in the x-values can drastically change the shape of the curve.
+* L1 incorporates Feature Selection; its output is "sparse"
 
 ## Accuracy Metrics for Regression
 * RMSE (Root Mean Square Error)
@@ -448,12 +476,50 @@ This master cheatsheet will tell you...
 # 4. Clustering
 
 ## K-Means
+* pre-determine how many clusters you want
 * R: [`kmeans()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kmeans.html) [(examples)](http://www.statmethods.net/advstats/cluster.html)
-* Python: [`KMeans(n_clusters)` from sklearn.cluster](http://scikit-learn.org/stable/modules/clustering.html#k-means)
+* Python:
+	* [`KMeans(n_clusters)` from sklearn.cluster](http://scikit-learn.org/stable/modules/clustering.html#k-means)
+	* [`kmeans().get_clusters()` from `pyclustering.cluster.kmeans`](http://pythonhosted.org/pyclustering/classpyclustering_1_1cluster_1_1kmeans_1_1kmeans.html)
 
-## Hierarchical/Agglomerative Clustering
+## Hierarchical/Agglomerative
+* returns a hierarchy of clusters, rather than a single clustering; you can visualize the hierarchy via a dendogram
+	* better than K-Means for exploratory analysis, but very time consuming for large datasets
 * R: [`hclust()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html) [(examples)](http://www.statmethods.net/advstats/cluster.html)
-* Python: [`AgglomerativeClustering().fit(data)` from sklearn.cluster](http://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py)
+	* Dendogram: [`rect.hclust(fit)`](http://www.statmethods.net/advstats/cluster.html)
+* Python:
+	* [`AgglomerativeClustering().fit(data)` from sklearn.cluster](http://scikit-learn.org/stable/auto_examples/cluster/plot_digits_linkage.html#sphx-glr-auto-examples-cluster-plot-digits-linkage-py)
+	* [`agglomerative().get_clusters()` from `pyclustering.cluster.agglomerative`](http://pythonhosted.org/pyclustering/classpyclustering_1_1cluster_1_1agglomerative_1_1agglomerative.html)
+
+## Fuzzy Clustering
+* rather than belonging to a single cluster, points have coefficient vectors, indicating the strength of their membership to each cluster
+	* essentially, membership between continuous and shared, rather than binary and exclusive
+
+### [C-Means](https://en.wikipedia.org/wiki/Fuzzy_clustering#Fuzzy_C-means_clustering)
+* fuzzy version of K-Means
+* R: [`cmeans()` from `cmeans`](http://ugrad.stat.ubc.ca/R/library/e1071/html/cmeans.html)
+* Python: [`clsuter.cmeans()` from `skfuzzy`](http://pythonhosted.org/scikit-fuzzy/auto_examples/plot_cmeans.html)
+
+## Density-Based
+* rather than cluster based on #-of-clusters, cluster based on density-of-clusters
+	* points sufficiently close to each other are clustered
+	* points distant from any other points are treated as noise
+
+### [DBSCAN (Density-Based Spatial Clustering of Applications with Noise)](https://en.wikipedia.org/wiki/DBSCAN)
+* two parameters
+	* epsilon - the range parameter; the maximum distance between two points to consider them neighbors
+	* minPts - the minimum number of points for a cluster to be formed
+* R: [`dbscan()` from `dbscan`](https://cran.r-project.org/web/packages/dbscan/dbscan.pdf)
+* Python:
+	* [`DBSCAN()` from `sclearn.cluster`](http://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html)
+	* [`dbscan().get_clusters()` from `pyclustering.cluster.dbscan`](http://pythonhosted.org/pyclustering/namespacepyclustering_1_1cluster_1_1dbscan.html)
+
+### [OPTICS (Ordering Points to Identify the Clustering Structure)](https://en.wikipedia.org/wiki/OPTICS_algorithm)
+* essentially a hierarchical version of DBSCAN
+	* epsilon need not be specified
+* unlike DBSCAN, OPTICS works well for clusters of varying density
+* R: [`optics()` from `dbscan`](https://cran.r-project.org/web/packages/dbscan/dbscan.pdf)
+* Python: [`optics().get_clusters()` from `pyclustering.cluster.optics`](http://pythonhosted.org/pyclustering/classpyclustering_1_1cluster_1_1optics_1_1optics.html)
 
 ---
 
