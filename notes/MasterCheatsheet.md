@@ -180,9 +180,16 @@ This master cheatsheet will tell you...
 * remove all features which have insufficient variance
 * Python: [`VarianceThreshold(threshold).fit_transform(data)` from sklearn.feature_selection](http://scikit-learn.org/stable/modules/feature_selection.html#removing-features-with-low-variance)
 
-#### Genetic Algorithmss
+#### Genetic Algorithms
 * create models and compute their "fitness" values - those with the best fitness values are combined randomly and given random mutations to make new models
-*
+* R: [`gafs()` from the `caret` package](http://topepo.github.io/caret/feature-selection-using-genetic-algorithms.html)
+* Python: [here's a great tutorial by Will Larson about implementing your own genetic algorithms](https://lethain.com/genetic-algorithms-cool-name-damn-simple/)
+	* essentially, you need the following:
+		* an `individual()` function to generate a random solution
+			* a `population()` function to generate a set of random solutions
+		* a `fitness()` function to evalaute how effective a solution is
+			* a `grade()` function to evaluate how effective the average solution is (for comparison purposes)
+		* an `evolve()` function which retains the optimal solution, keeps some suboptimal solutions, and randomly breeds + mutates those solutions
 
 ### Dimensionality Reduction
 
@@ -292,7 +299,7 @@ This master cheatsheet will tell you...
 * the shrinkage is determined by the lambda attribute
 	* lambda = 0: ordinary least-squares regression
 	* lambda = 1: coefficients approach zero
-* R: [`lm.ridge()` from MASS](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/lm.ridge.html)
+* R: [`glmnet(family="gaussian", alpha=0)` in `glmnet`](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html)
 * Python: [`Ridge()` from sklearn.linear_model](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)
 
 ### [Lasso Regression](https://en.wikipedia.org/wiki/Lasso_(statistics))
@@ -305,15 +312,15 @@ This master cheatsheet will tell you...
 	* Multicollinearity
 		* as a consequence, Lasso will generally keep only one from a set of collinear variables (while Ridge will keep all and shrink their coefficients instead)
 * Lagrange: minimize the average squared error, under the constraint that the sum of the magnitude of the coefficients is less than some parameter
-* R: [`glmnet()` in `glmnet`](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
-	* returns multiple models for different lambda values
+* R: [`glmnet(family="gaussian", alpha=1)` in `glmnet`](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html)
+	* [returns multiple models for different lambda values](http://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
 	* use `cv.glmnet(x, y)$lambda.min` to find the optimal lambda value via cross-validation
 * Python: [`Lasso` in sklearn.linear_model ](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html)
 
 ### [Elastic Net](https://en.wikipedia.org/wiki/Elastic_net_regularization)
 * uses both L1 and L2 penalty functions
-* R:
-* Python:
+* R: [`glmnet(family="gaussian", alpha=.5)` in `glmnet`](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html)
+* Python: [`ElasticNet()` from `sklearn.lineaer_model`](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html)
 
 ### [Comparison between L1 and L2 Regularization](http://www.chioka.in/differences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares/)
 * L1 is more Stable
