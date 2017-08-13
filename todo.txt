@@ -1,0 +1,4 @@
+Statistics.md, MasterCheatsheet.md, and other notes
+Statistics for CS notes
+Big Data notes
+Convert into Gitbook?
