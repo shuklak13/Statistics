@@ -12,10 +12,13 @@
 	- [[Test for No Autocorrelation]](http://www2.aueb.gr/users/koundouri/resees/uploads/Chapter%2007%20-%20Autocorrelation.pptx)](#test-for-no-autocorrelationhttpwww2auebgruserskoundourireseesuploadschapter200720-20autocorrelationpptx)
 	- [Testing for Homogeneous Variance (Homoscedasticity)](#testing-for-homogeneous-variance-homoscedasticity)
 	- [Feature Selection and Dimensionality Reduction](#feature-selection-and-dimensionality-reduction)
-		- [Feature Selection](#feature-selection)
-		- [Dimensionality Reduction](#dimensionality-reduction)
+		- [Feature Selection AKA Subset Selection](#feature-selection-aka-subset-selection)
+			- [Recursive/Stepwise](#recursivestepwise)
+			- [All-Subsets](#all-subsets)
+			- [Statistical Tests / Univariate Filters](#statistical-tests-univariate-filters)
 			- [Low Variance Threshold](#low-variance-threshold)
-			- [Statistical Tests](#statistical-tests)
+			- [Genetic Algorithms](#genetic-algorithms)
+		- [Dimensionality Reduction](#dimensionality-reduction)
 			- [Principle Components Analysis](#principle-components-analysis)
 	- [Nonlinear relationships](#nonlinear-relationships)
 	- [The Problem with Hypothesis Testing](#the-problem-with-hypothesis-testing)
@@ -33,9 +36,11 @@
 	- [SVM Regression](#svm-regression)
 	- [Local Regression (LOESS and LOWESS)](#local-regression-loess-and-lowess)
 	- [Hierarchical Linear Model](#hierarchical-linear-model)
-	- [Regularization Methods](#regularization-methods)
+	- [Regularization/Shrinkage Methods](#regularizationshrinkage-methods)
 		- [[Ridge Regression AKA Weight Decay AKA Tikhonov Regularization](https://onlinecourses.science.psu.edu/stat857/node/155)](#ridge-regression-aka-weight-decay-aka-tikhonov-regularizationhttpsonlinecoursessciencepsuedustat857node155)
-		- [Lasso Regression](#lasso-regression)
+		- [[Lasso Regression](https://en.wikipedia.org/wiki/Lasso_%28statistics%29)](#lasso-regressionhttpsenwikipediaorgwikilasso28statistics29)
+		- [[Elastic Net](https://en.wikipedia.org/wiki/Elastic_net_regularization)](#elastic-nethttpsenwikipediaorgwikielasticnetregularization)
+		- [[Comparison between L1 and L2 Regularization](http://www.chioka.in/differences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares/)](#comparison-between-l1-and-l2-regularizationhttpwwwchiokaindifferences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares)
 	- [Accuracy Metrics for Regression](#accuracy-metrics-for-regression)
 - [3. Classification](#3-classification)
 	- [Logistic Regression](#logistic-regression)
@@ -48,7 +53,12 @@
 		- [Accuracy Metrics for Classification](#accuracy-metrics-for-classification)
 - [4. Clustering](#4-clustering)
 	- [K-Means](#k-means)
-	- [Hierarchical/Agglomerative Clustering](#hierarchicalagglomerative-clustering)
+	- [Hierarchical/Agglomerative](#hierarchicalagglomerative)
+	- [Fuzzy Clustering](#fuzzy-clustering)
+		- [[C-Means](https://en.wikipedia.org/wiki/Fuzzy_clustering#Fuzzy_C-means_clustering)](#c-meanshttpsenwikipediaorgwikifuzzyclusteringfuzzyc-meansclustering)
+	- [Density-Based](#density-based)
+		- [[DBSCAN (Density-Based Spatial Clustering of Applications with Noise)](https://en.wikipedia.org/wiki/DBSCAN)](#dbscan-density-based-spatial-clustering-of-applications-with-noisehttpsenwikipediaorgwikidbscan)
+		- [[OPTICS (Ordering Points to Identify the Clustering Structure)](https://en.wikipedia.org/wiki/OPTICS_algorithm)](#optics-ordering-points-to-identify-the-clustering-structurehttpsenwikipediaorgwikiopticsalgorithm)
 - [5. [Ensemble Methods](https://en.wikipedia.org/wiki/Ensemble_learning#Bucket_of_models)](#5-ensemble-methodshttpsenwikipediaorgwikiensemblelearningbucketofmodels)
 	- [Bagging (AKA Bootstrap AGGregatING)](#bagging-aka-bootstrap-aggregating)
 	- [[Boosting](https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29)](#boostinghttpsenwikipediaorgwikiboosting28machinelearning29)
@@ -148,7 +158,7 @@ This master cheatsheet will tell you...
 	* reduce risk of overfitting
 	* number of features should be less than number of observations
 
-### Feature Selection
+### Feature Selection AKA Subset Selection
 * get rid of redundant/irrelevant features
 * compare models to maximize performance metrics (Adjusted R^2, AIC, BIC, etc.)
 * [`caret` contains a list of variable importance metrics for most types of models](http://topepo.github.io/caret/variable-importance.html)
@@ -290,21 +300,24 @@ This master cheatsheet will tell you...
 * [These slides] describe Hierarchical Linear Models in greater detail, and how they can be used in R.
 * R: [`lmer()`] from `lme4`
 
-## Regularization Methods
+## Regularization/Shrinkage Methods
 * remedial methods that penalize large coefficients and alleviate multicollinarity by applying a shrinkage term to coefficients
 * increase bias, but decrease variance of the estimator
+* can be used as an alternative to feature selection methods
 
 ### [Ridge Regression AKA Weight Decay AKA Tikhonov Regularization](https://onlinecourses.science.psu.edu/stat857/node/155)
 * uses the L2 penalty function (squared difference)
 * the shrinkage is determined by the lambda attribute
+	* lambda is used for proportional shrinkage
 	* lambda = 0: ordinary least-squares regression
 	* lambda = 1: coefficients approach zero
 * R: [`glmnet(family="gaussian", alpha=0)` in `glmnet`](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html)
 * Python: [`Ridge()` from sklearn.linear_model](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)
 
-### [Lasso Regression](https://en.wikipedia.org/wiki/Lasso_(statistics))
+### [Lasso Regression](https://en.wikipedia.org/wiki/Lasso_%28statistics%29)
 * uses the L1 penalty function (absolute difference)
 * like with Ridge, the shrinkage is determined by the lambda attribute
+	* translates each coefficient by the constant lambda, truncating at zero
 * in addition to Regularization, Lasso can also be used for Variable Selection
 	* sufficiently small coefficients are set to zero
 	* this is an advantage Lasso has over Ridge (Ridge can shrink coefficients, but never sets them to zero)

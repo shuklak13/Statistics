@@ -19,3 +19,6 @@ Source: ["Evaluating Recommendation Systems"](https://www.microsoft.com/en-us/re
 2. Control all variables except those intended to be tested
 3. Consider the scope at which the experiment's results can be generalized
 	* the more diverse the dataset, the more an experiment's results can be generalized
+
+# More Cool Reading
+https://www.researchgate.net/publication/221140967_The_YouTube_video_recommendation_system
