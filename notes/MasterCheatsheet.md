@@ -206,7 +206,8 @@ This master cheatsheet will tell you...
 #### Principle Components Analysis
 * reduces features space to vectors representing linear combination of features
 * decompose a feature space into orthogonal vectors that maintain the maximum amount of the original space's variance
-* R:
+* R: [`preProcess(method=c("pca"))`](https://stats.stackexchange.com/questions/46216/pca-and-k-fold-cross-validation-in-caret-package-in-r) [from `caret`](https://topepo.github.io/caret/pre-processing.html#the-preprocess-function)
+	* make sure to use the `preProcess` argument *inside* of the `train()` method, rather than using teh `preProcess` method *before* the train() method - doing the latter
 * Python: [`PCA(n_components).fit(data).transform(data)` from sklearn.decomposition](http://scikit-learn.org/stable/modules/decomposition.html#pca)
 
 ## Nonlinear relationships
