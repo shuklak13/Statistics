@@ -41,6 +41,7 @@
 		- [[Lasso Regression](https://en.wikipedia.org/wiki/Lasso_%28statistics%29)](#lasso-regressionhttpsenwikipediaorgwikilasso28statistics29)
 		- [[Elastic Net](https://en.wikipedia.org/wiki/Elastic_net_regularization)](#elastic-nethttpsenwikipediaorgwikielasticnetregularization)
 		- [[Comparison between L1 and L2 Regularization](http://www.chioka.in/differences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares/)](#comparison-between-l1-and-l2-regularizationhttpwwwchiokaindifferences-between-the-l1-norm-and-the-l2-norm-least-absolute-deviations-and-least-squares)
+		- [Least Angle Regression (LARS)](#least-angle-regression-lars)
 	- [Accuracy Metrics for Regression](#accuracy-metrics-for-regression)
 - [3. Classification](#3-classification)
 	- [Logistic Regression](#logistic-regression)
@@ -168,6 +169,7 @@ This master cheatsheet will tell you...
 	* backwards tends to perform better than forward
 * greedy, locally optimized, fast
 * may perform poorly in the presence of multicollinearity
+* most commonly used in regression (in which case, it is called "stepwise regression")
 * R:
 	* [`step()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/step.html) is commonly used on for R's regression models
 	* [`rfeIter()` and `rfe()` (for "recursive feature selection") from the `caret` package](http://topepo.github.io/caret/recursive-feature-elimination.html) implements backwards stepwise feature selection for any model
@@ -342,6 +344,12 @@ This master cheatsheet will tell you...
 * L2 is more Robust
 	* Because L1 has only one degree of freedom, changes in the x-values can drastically change the shape of the curve.
 * L1 incorporates Feature Selection; its output is "sparse"
+
+### Least Angle Regression (LARS)
+* similar to forward stepwise regression, but instead of starting with no variables and adding a new one at each step, start with all variables with coefficients of zero and increase a coefficient at each step,
+	* increase in coefficient is based on which variable has greatest correlation with the residual
+* R: [`lars()` from `lars`](https://cran.r-project.org/web/packages/lars/lars.pdf)
+* Python: [`Lars()` from `sklearn.linear_mdoel`](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lars.html)
 
 ## Accuracy Metrics for Regression
 * RMSE (Root Mean Square Error)
