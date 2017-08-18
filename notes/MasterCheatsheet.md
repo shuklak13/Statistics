@@ -63,6 +63,8 @@
 - [5. [Ensemble Methods](https://en.wikipedia.org/wiki/Ensemble_learning#Bucket_of_models)](#5-ensemble-methodshttpsenwikipediaorgwikiensemblelearningbucketofmodels)
 	- [Bagging (AKA Bootstrap AGGregatING)](#bagging-aka-bootstrap-aggregating)
 	- [[Boosting](https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29)](#boostinghttpsenwikipediaorgwikiboosting28machinelearning29)
+		- [Adaboost](#adaboost)
+		- [[Extreme Gradient Boosting (XGBoost)](http://xgboost.readthedocs.io/en/latest/model.html)](#extreme-gradient-boosting-xgboosthttpxgboostreadthedocsioenlatestmodelhtml)
 	- [[Bucket of Models](https://www.quora.com/What-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)](#bucket-of-modelshttpswwwquoracomwhat-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)
 	- [[Stacking and Blending](https://mlwave.com/kaggle-ensembling-guide/)](#stacking-and-blendinghttpsmlwavecomkaggle-ensembling-guide)
 - [6. Model Evaluation](#6-model-evaluation)
@@ -395,8 +397,11 @@ This master cheatsheet will tell you...
 * Python: `tree.DecisionTreeClassifier().fit(x, y)` from sklearn
 
 ### Random Decision Forests
-* R: `randomForest()` from randomForest
-* Python: []`RandomForestClassifier()` from sklearn.ensemble](http://scikit-learn.org/stable/modules/ensemble.html#forest)
+* bagging + decision trees
+	* [the difference between Random Forests and Bagged Forests is that Random Forests select only a subset of features to use for each decision tree ](https://www.quora.com/What-are-the-differences-between-bagged-trees-and-random-forests)
+		* this increases randomization and, thus, reduces overfitting
+* R: `randomForest()` from `randomForest`
+* Python: [`RandomForestClassifier()` from `sklearn.ensemble`](http://scikit-learn.org/stable/modules/ensemble.html#forest)
 
 ## Linear Discriminant Analysis and Quadratic Discriminant Analysis
 * Assumptions:
@@ -555,6 +560,7 @@ This master cheatsheet will tell you...
 # 5. [Ensemble Methods](https://en.wikipedia.org/wiki/Ensemble_learning#Bucket_of_models)
 * Voting/Averaging
 	* the most simple of ensemble methods - simple take the mode (for classification) or mean (for regression)
+	* Python: [`VotingClassifier()` from sklearn.ensemble](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingClassifier.html#sklearn.ensemble.VotingClassifier)
 	* Rank Averaging
 		* like averaging, but average based on rank instead of predicted value
 		* this should reduce the problem where different models may have different variances or scales
@@ -563,7 +569,9 @@ This master cheatsheet will tell you...
 	* Assumptions
 		* original sample data represents the population distribution
 * Stability
-	* if a model's output does not significantly change when new input is added
+	* a model whose output does not change significantly when the training set is modified
+	* Stable examples: linear models and KNN tend to be stable
+	* Unstable examples:
 	* Ex: decision trees are not stable, but KNN is
 * [Correlation](https://mlwave.com/kaggle-ensembling-guide/)
 	* It's often better to ensemble very different models with good accuracy on different sections of the population, rather than similar models with the best accuracy on overlapping sections of the population
@@ -578,15 +586,41 @@ This master cheatsheet will tell you...
 * Each record and model has equal weight
 	* because of this, models can run in parallel, allowing for faster aggregation than Boosting
 * Pros
-	* improves stability and accuracy, while reducing variance and overfitting
+	* improves accuracy on unstable algorithms
+	* reducies variance and overfitting (by introducting randomness into the model construction)
 * Cons
-	* Degrades performance on stable algorithms
+	* Degrades accuracy on stable algorithms
+		* [because of this, bagging is typically used for decision trees (generally unstable), but not for other linear models (generally stable)](https://www.quora.com/Why-does-bagging-work-so-well-for-decision-trees-but-not-for-linear-classifiers)
+* Python: [BaggingClassifier](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier) and [BaggingRegressor](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingRegressor.html#sklearn.ensemble.BaggingRegressor) from sklearn.ensemble
 
 ## [Boosting](https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29)
-* Similar to Bagging, but instead of training every model independently (and in parallel), the models are trained in sequence to give greater weight to the records predicted incorrectly by previous models
-* Voting/Averaging is weighted based on the performance of each model
-* most common implementation is [Adaboost](https://en.wikipedia.org/wiki/AdaBoost)
-* another popular (and very powerful) implementation is Extreme Gradient Boosting, [available in R, Python, Scala, and Julia](http://xgboost.readthedocs.io/en/latest/get_started/index.html)
+* Similar to Bagging, but...
+	* instead of being trained independently, models are trained to give greater weight to records predicted incorrectly by previous models
+	* during voting/averaging, models themselves are weighted based on their accuracy
+* Pros:
+	* better results (lower bias) than bagging, because models learn from each others' mistakes
+* Cons:
+	* because models must be run sequentially, slower than bagging (which can run in parallel)
+	* more likely to overfit than bagging
+* [a good article on the differences between bagging and boosting](https://quantdare.com/what-is-the-difference-between-bagging-and-boosting/)
+
+### Adaboost
+* most common implementation of boosting [Adaboost](https://en.wikipedia.org/wiki/AdaBoost)
+* R: [`daboost()` from `fastAdaboost`](https://cran.r-project.org/web/packages/fastAdaboost/README.html)
+* Python: [`AdaBoostClassifier()`](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html) and [`AdaBoostRegressor`](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html#sklearn.ensemble.AdaBoostRegressor) from `sklearn.ensemble`
+
+### Gradient Boosting
+* similar to decision forests, except leaves contain scores rather than classes
+* Training: iteratively add new trees to the forest to optimize the objective function, where the objective function contains both an error component and a regularization component
+* Prediction: for a given input, sum up the outputs of all the trees to generate the model's output
+* R: [`gbm()` from `gbm`](https://cran.r-project.org/web/packages/gbm/gbm.pdf)
+* Python: [`GradientBoostingClassifier()`](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier) and [`GradientBoostingRegressor()`](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html#sklearn.ensemble.GradientBoostingRegressor) from `sklearn.ensemble`
+
+
+#### [Extreme Gradient Boosting (XGBoost)](http://xgboost.readthedocs.io/en/latest/model.html)
+* a recently popular implementation of Gradient Boosting - particularly successful in Kaggle challenges
+* Advantages: [built-in pruning and cross-validation, customizable objective and regularization functions, and speed optimizations via parallelization and caching](https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/)
+* available in [R, Python, Scala, Julia](https://xgboost.readthedocs.io/en/latest/get_started/index.html), and [Java](http://xgboost.readthedocs.io/en/latest/jvm/java_intro.html)
 
 ## [Bucket of Models](https://www.quora.com/What-are-the-best-methods-for-combining-different-machine-learning-models-to-get-a-better-prediction-than-any-individual-model)
 * many variations
@@ -598,17 +632,20 @@ This master cheatsheet will tell you...
 
 ## [Stacking and Blending](https://mlwave.com/kaggle-ensembling-guide/)
 * for classification
-* both algorithms have similar performance
-* Stacking
-	* split the training set, and train a classifier on each split, testing those classifiers on the entire dataset. Use the output probabilities from each classifier as features to train a new classifier.
+* [Stacking](http://quantdare.com/dream-team-combining-classifiers-2/)
+	* Split the training set, and train a classifier on each split, testing the classifiers on the entire dataset
+	* Combine the outputs from each classifier by using them as features for a new classifier
 * Blending
-	* similar to stacking, except that the final model is trained on only a small held-out subsample instead of on the original training set.
+	* Similar to stacking, except that the final model is trained on only a small held-out subsample instead of being trained on the original training set.
 	* Pros
 		* you don't share data between the classifier models and the ensemble model
 	* Cons
 		* you're training on a smaller set of data
+* both algorithms have similar performance
 * Implementations
-	* [Logistic Regression in Python](https://github.com/emanuele/kaggle_pbr/blob/master/blend.py)
+	* R: [`caretStack()` from `caretEnsemble`](https://cran.r-project.org/web/packages/caretEnsemble/vignettes/caretEnsemble-intro.html) can ensemble models from `caret`
+		* also contains `caretEnsemble()`, which does stacking via a general linear model
+	* Python: [an example ensembling sklearn models](https://github.com/emanuele/kaggle_pbr/blob/master/blend.py)
 
 ---
 
