@@ -28,9 +28,9 @@ quadraticDiscriminantAnalysis <- function(f, training, testing, y){
   computeAccuracy(predictions)
 }
 
-# knearestNeighbors(cbind(Smarket$Lag1, Smarket$Lag2), cbind(Smarket$Lag1, Smarket$Lag2), Smarket$Direction, 3)
+# knearestNeighbors(cbind(Smarket$Lag1, Smarket$Lag2), cbind(Smarket$Lag1, Smarket$Lag2), Smarket$Direction)
 knearestNeighbors <- function(training, testing, y, k){
-  library(class)
-  predictions <- knn(training, testing, y, k=k)
+  libary(class)
+  predictions <- knn(training, testing, y, k)
   print(mean(predictions==y))
 }
