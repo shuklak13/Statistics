@@ -90,6 +90,22 @@ This master cheatsheet will tell you...
 	* sklearn - machine learning
 	* statsmodel - traditional statistics
 
+## Bias-Variance Tradeoff
+* high-bias algorithms tend to do better on small datasets
+* high-variance algorithms tend to do better on large datasets, where more subtlety can be captured
+	* a high-variance classification algorithm would have a large [*VC Dimension* (the capacity of a classification algorithm to learn a large space of functions)](https://en.wikipedia.org/wiki/VC_dimension)
+
+## [Generative vs Discriminative Models](https://stats.stackexchange.com/questions/12421/generative-vs-discriminative)
+* Discriminative learn **boundaries** between classes *(how to discriminate between classes)*
+	* Logistic Regression, SVM, Decision Trees
+	* make no/few assumptions about underlying distribution
+* Generative learn **distributions** of classes *(how a class is generated)*
+	* Naive Bayes
+	* make assumptions about underlying distribution (Ex: NB assumes independence of features)
+* typically, Discriminative models outperform Generative models on large datasets
+	* however, Generative models can prevent overfitting on small datasets since they enforce structural constraints
+	* in addition, Generative models are better at detecting anomalies/outliers
+
 ---
 
 # 1. Preprocessing: Checking for Assumptions and Correcting Data
@@ -376,23 +392,32 @@ This master cheatsheet will tell you...
 ---
 
 # 3. Classification
+
 ## Logistic Regression
+* Discriminative (calculates p(y|x)
 * Assumptions:
 * Advantages:
-	* relatively robust: no assumptions are made about the data's distribution
+	* relatively robust: no assumptions are made about the data's distribution (unlike Naive Bayes)
+	* many ways to regularize the model
+	* easy probabilistic interpretation
+	*
 * R: `glm(family = binomial())` from the mlogit, or `mlogit()` if the output consists of multiple classes
 * Python: `LogisticRegression().fit()` from sklearn.linear_model, or [`Logit(y, x).fit()` or `GLM(family=families.Gamma())` from statsmodels.api](http://www.statsmodels.org/stable/examples/notebooks/generated/glm.html)
 
 ## Decision Trees
 * Advantages
 	* extremely easy to interpret
-	* requires little data preparation (no normalization, dummy vars, feature selection required)
-	* few assumptions about the data
+	* requires little data preparation (no normalization, dummy vars, or feature selection required)
+	* no assumptions about the data's distribution
+	* handle feature interactions
+	* no paramater tuning
+	* fast to build
 * Disadvantages
 	* unstable - small variations produce a completely different decision tree
 	* greedy - optimizes locally, not globally
-	* very vulnerable to overfitting - make sure to use pruning or validation/ensemble methods to correct for this
+	* vulnerable to overfitting - make sure to use pruning or validation/ensemble methods to correct for this
 	* poor at out-of-sample prediction
+	* doesn't support online learning
 * R: `rpart(y ~ x, "class")` from rpart
 * Python: `tree.DecisionTreeClassifier().fit(x, y)` from sklearn
 
@@ -428,9 +453,10 @@ This master cheatsheet will tell you...
 * [R:](https://rpubs.com/ryankelly/LDA-QDA) `lda(y ~ x)` and `qda(y ~ x)` from MASS
 * [Python:](http://scikit-learn.org/stable/modules/lda_qda.html) `LinearDiscriminantAnalysis.fit(x,y).predict(x)` and `QuadraticDiscriminantAnalysis.fit(x,y).predict(x)` from sklearn.discriminant_analysis
 
-## K-Nearest Neighbors
+## K-Nearest Neighbors (KNN)
 * Assumptions
 	* all parameters can be mapped onto a hyperspace with a meaningful distance function
+* Low Bias, High Variance
 * Advantages
 	* Lazy-Learner - no model needs to be created, so no training time!
 	* Nonparametric - no assumptions about underlying data distribution
@@ -440,30 +466,39 @@ This master cheatsheet will tell you...
 * R: `knn(training, testing, trainingY, k)` from class
 * Python: `neighbors.KNeighborsClassifier(n_neighbors).fit(x, y)` from sklearn
 
-## Support Vector Machine
+## Support Vector Machine (SVM)
+* Goal:
+	* Maximize the distance between the separator and the data points (support vectors)
+		* [this addresses a common issue in linear classifiers, where data points often place their separators near data points; this means that very similar points can have different predictions](https://brilliant.org/wiki/support-vector-machines/#background)
+		* [non-probabilistic; rather than trying to maximize the confidence of a classifier's prediction (as in logistic regression), try to maximize the margin between the separator and the data points ](https://brilliant.org/wiki/support-vector-machines/#maximum-margin-classifiers)
+	* Find the support vectors in the dataset that best separate the data
 * Assumptions
 	*
 * Advantages
-	* effective in high-dimensional data
+	* effective in high-dimensional data (this can make it really useful in text classification)
 	* works well with both linearly and nonlinearly separable data [(nonlinearly-separable data uses the kernel trick)](https://en.wikipedia.org/wiki/Support_vector_machine#Nonlinear_classification)
 	* finds the global minimum
-	* memory efficient - only a few points are used to create decision boundary
+	* fast and memory efficient - only the support vector points are used to create the decision boundary
 	* surprisingly effective when # dimensions > # observations
 * Disadvantages
 	* does not return a confidence value
-	* difficult to interpret model
+	* difficult to interpret
+	* parameter tuning required
 	* they can scare people
 * [R: `svm(y ~ x)` from libsvm](https://cran.r-project.org/web/packages/e1071/vignettes/svmdoc.pdf)
 * [Python: `LinearSVC`, `SVC`, and `NuSVC` from sklearn](http://scikit-learn.org/stable/modules/svm.html)
 
 ## [Naive Bayes](http://sebastianraschka.com/Articles/2014_naive_bayes_1.html#3_3_multivariate)
+* Generative (calculates p(x,y))
+* High Bias, Low Variance
 * Assumptions
 	* features are conditionally independent
 	* data is linearly separable (NB is a linear classifier)
 * Advantages
-	*
+	* fast, easy, and often accurate
+		* [if the independence assumption is true, then Naive Bayes converges faster than discriminative models](http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/)
 * Disadvantages
-	* naive assumption is usually violated; can't capture interaction effects
+	* naive assumption is usually violated; can't capture interactions between features
 * R: [`naiveBayes()` from `e1071`](http://ugrad.stat.ubc.ca/R/library/e1071/html/naiveBayes.html)
 * Python: [various functions from `sklearn.naive_bayes()`](http://scikit-learn.org/stable/modules/naive_bayes.html)
 	* [Read this to understand the different naive bayes options in sklearn](https://www.reddit.com/r/MachineLearning/comments/2uhhbh/difference_between_binomial_multinomial_and/)
