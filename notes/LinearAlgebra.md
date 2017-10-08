@@ -8,7 +8,7 @@
 * Recall that for matrix A, eigenvector x, and eigenvalue c, `Ax=cx`.
 * Therefore, `(A-cI)x=0`
 * It is known that `Bx=0 => det(B)=0` (??? is this true).
-* Therefore, `det(A-cI)=0`. This is the **Characteristic Equation**. (why's it called this?)
+* Therefore, `det(A-cI)=0`. This is the **Characteristic Equation**.
 	* note that A-cI is just A with c subtracted from the diagonal
 	* there is also a **Characteristic Polynomial**, which is `det(A-cI)=p(c)`.
 * **To find the eigenvector c**, solve the Charcteristic Equation.
@@ -23,8 +23,11 @@
 	* The matrix is singular (not invertible)
 	* A parallelipiped formed by the column/row vectors would have zero volume (because the vectors are linearly dependent, so they would just collapse on each other)
 	* Any multiple of the matrix will also have determinant zero
-	* The matrix cannot row-reduce to an identity matrix
+	* The matrix cannot row-reduce to the identity matrix
 	* The matrix's rank is not equal to its # of columns/rows
 * Sources:
 	* http://linear.ups.edu/html/section-PDM.html
 	* https://math.stackexchange.com/questions/355644/what-does-it-mean-to-have-a-determinant-equal-to-zero
+
+# Eigenvector Decomposition
+* [MIT OpenCourseware: Singular Value Decomposition](https://www.youtube.com/watch?v=mBcLRGuAFUk)
