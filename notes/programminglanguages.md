@@ -1,0 +1,10 @@
+- Assembly vs C vs Java vs Python (“assembled” vs “compiled” vs “interpreted”)
+    - Machine code    set of instructions read directly by the CPU
+        - no portability, maximum optimization
+    - Assembly            set of human-readable instructions mapped 1-1 to machine code
+        - assembly is “assembled” rather than “compiled” or “interpreted”
+    - C             compiled into an executable by gcc, which is a program written in assembly language. The executable is machine code.
+    - Java       compiled into JVM Byte Code by javac, which is interpreted by the JVM, which is interpreted into machine code at runtime
+        - “Semi-compiled”
+    - Python not compiled – interpreted by the Python interpreter,
+    - which is converted into machine code in real-time during execution
