@@ -1,3 +1,54 @@
+* Relational Databases
+    * Why use SQL instead of NoSQL?
+        * Enforcement of ACID (Atomicity, Consistency, Isolation, ) on database transactions
+        * Easy-to-understand relational model
+        * Powerful JOIN clause allows for operations over many combinations of large sets of data
+    * Why use NoSQL instead of Relational?
+        * Data with dynamic structure that cannot be easily captured in a tabular format
+        * Better scaling w/ large quantities of data (b/c less overhead)
+    * SQLite
+        * a very fast, small, lightweight DB
+        * SQLite is a library that gets "embedded" inside that uses it
+        * a "file-based" DB instead of a "process-based" DB
+            * when an app uses SQLite, data is sent to files rather than to sockets
+        * however, SQLite has no user management system
+        * useful for embedded apps - those that need portability w/o external dependencies, such as small mobile apps or games
+        * not useful for an application that requires distributed access
+        * also useful for testing without using a full DB
+    * MySQL
+        * most popular DB - commonl in web apps
+        * easy, feature-rich, scalable, and secure
+    * MariaDB
+        * a branch of MySQL created by MySQL's original developers after Oracle purches Sun (MySQL's original creator)
+            * almost exactly identical, except rather than relying on Oracle's official support you are part of the open source community
+        * pretty much better than MySQL unless you want Oracle support
+    * PostegreSQL
+        * considered by some to be the most powerful/advanced DB, with many features
+        * highly extendible with stored procedures
+        * provides superior data reliability to MySQL
+        * however, it is slower than MySQL for read ops, so it's not the best tool if you just need a simplistic read-heavy datastore
+        * it can be overkill if you have a simple set-up
+
+MongoDB  
+    MongoDB vs ElasticSearch:
+        https://stackoverflow.com/questions/29538527/mongodb-elasticsearch-or-only-elasticsearch
+        MongoDB is better as a persistent data store. It can be used as a primary store.
+        Elasticsearch is an indexing service that makes it very easy to search and query data. Elasticsearch is better as an additional service for fast querying on top of a primary store.
+            Elasticsearch's querying is more powerful because it has a ranking feature allowing for sorted results. It can use domain-specific knowledge to create smarter queries than a simple keyword search.
+    MongoDB uses "documents" which are key-val stores similar to Elasticsearch
+    MongoDB units
+        Collections (like a table in RDBMs or an Index in Elasticsearch)
+        Document    (like a row in RDBMs)
+        Fields      (like a column in RDBMs)
+    Advantages over RDBMs
+        Schemaless (schema may defer from one doc to another, even within the same collection)
+        Easy to scale   (auto-sharding, replication)
+        JSON-style documents
+        Can index on any document
+    Components
+        mongod.exe - run this to start the MongoDB server
+        mongo.exe - run this to interact with the running MongoDB instance through the CLI
+
 # Purpose of this document
 
 * Explain what each of these technologies does
