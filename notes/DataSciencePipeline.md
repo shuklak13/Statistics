@@ -28,11 +28,11 @@
 
 ## [ACID](https://en.wikipedia.org/wiki/ACID)
 
-* A database transaction should have the following properties:
+* A database transaction (group of operations) should have the following properties:
     * *Atomicity*: each transaction is treated as an indivisible unit - if the transaction fails, all operations within it fail; if it succeeds, all of its operations succeed
     * *Consistency*: each transaction must take the database from one valid state to another; no rule defined for the database may be violated
     * *Isolation*: transactions can operate concurrently with the same result as if they operated sequentially
-    * *Durability*: after a transaction fiishes, it should be stored in non-volatile memory to prevent data loss
+    * *Durability*: after a transaction finishes, it should be stored in non-volatile memory to prevent data loss
 
 ## Normalization
 
@@ -209,6 +209,10 @@
     * Field: like a cell - these are comma-separated key:value pairs that belong to a Document
     * Mapping: similar to a RDBMS's schema definition
     * Shard: this is a single instance of Lucene - it is managed automatically by Elasticsearch, and is used for replication and fault-tolerance
+* Percolator
+    * One cool feature of ES is the "percolator", an inverse search where queries are stored and indexed (as opposed to documents), and are retrieved by inputting matching documents
+        * Basically, you provide a document, and ES returns queries that the document would match to.
+        * This can be useful for discovering queries if you know the type of document you're looking for but not sure what is the best query for it.
 
 ## Kafka/RabbitMQ
 
