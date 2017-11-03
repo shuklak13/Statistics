@@ -8,13 +8,17 @@
         * Better scaling w/ large quantities of data (b/c less overhead)
     * SQLite
         * a very fast, small, lightweight DB
-        * SQLite is a library that gets "embedded" inside that uses it
+        * SQLite is a C library that gets "embedded" inside that uses it
+            * also comes with a CLI that can be used to modify the database file
         * a "file-based" DB instead of a "process-based" DB
-            * when an app uses SQLite, data is sent to files rather than to sockets
-        * however, SQLite has no user management system
+            * when an app uses SQLite, data is sent to a file rather than to sockets
+            * only one cross-platform file is used to store the entire database
         * useful for embedded apps - those that need portability w/o external dependencies, such as small mobile apps or games
-        * not useful for an application that requires distributed access
-        * also useful for testing without using a full DB
+            * also useful for testing without using a full DB
+        * however, SQLite has no user management system
+            * not useful for an application that requires concurrent or distributed access (all data stored in 1 file on 1 host, so only 1 write may occur at a time)
+        * dynamically and weakly typed, unlike most RDBMS, which are staticlly and strongly typed
+        * very popular - used in most browsers (Chrome, Firefox, Opera, Safari), some web frameworks (Django, Ruby on Rails), and some operating systems (Android, Win10)
     * MySQL
         * most popular DB - commonl in web apps
         * easy, feature-rich, scalable, and secure
@@ -29,25 +33,30 @@
         * however, it is slower than MySQL for read ops, so it's not the best tool if you just need a simplistic read-heavy datastore
         * it can be overkill if you have a simple set-up
 
-MongoDB  
-    MongoDB vs ElasticSearch:
-        https://stackoverflow.com/questions/29538527/mongodb-elasticsearch-or-only-elasticsearch
-        MongoDB is better as a persistent data store. It can be used as a primary store.
-        Elasticsearch is an indexing service that makes it very easy to search and query data. Elasticsearch is better as an additional service for fast querying on top of a primary store.
-            Elasticsearch's querying is more powerful because it has a ranking feature allowing for sorted results. It can use domain-specific knowledge to create smarter queries than a simple keyword search.
-    MongoDB uses "documents" which are key-val stores similar to Elasticsearch
-    MongoDB units
-        Collections (like a table in RDBMs or an Index in Elasticsearch)
-        Document    (like a row in RDBMs)
-        Fields      (like a column in RDBMs)
-    Advantages over RDBMs
-        Schemaless (schema may defer from one doc to another, even within the same collection)
-        Easy to scale   (auto-sharding, replication)
-        JSON-style documents
-        Can index on any document
-    Components
-        mongod.exe - run this to start the MongoDB server
-        mongo.exe - run this to interact with the running MongoDB instance through the CLI
+* MongoDB
+    * MongoDB vs ElasticSearch:
+        * https://stackoverflow.com/questions/29538527/mongodb-elasticsearch-or-only-elasticsearch
+        * MongoDB is better as a persistent data store. It can be used as a primary store.
+        * Elasticsearch is an indexing service that makes it very easy to search and query data. Elasticsearch is better as an additional service for fast querying on top of a primary store.
+            * Elasticsearch's querying is more powerful because it has a ranking feature allowing for sorted results. It can use domain-specific knowledge to create smarter queries than a simple keyword search.
+    * MongoDB uses "documents" which are key-val stores similar to Elasticsearch
+    * MongoDB units
+        * Collections (like a table in RDBMs or an Index in Elasticsearch)
+        * Document    (like a row in RDBMs)
+        * Fields      (like a column in RDBMs)
+    * Advantages over RDBMs
+        * Schemaless (schema may defer from one doc to another, even within the same collection)
+        * Easy to scale   (auto-sharding, replication)
+        * JSON-style documents
+        * Can index on any document
+    * Components
+        * mongod.exe - run this to start the MongoDB server
+        * mongo.exe - run this to interact with the running MongoDB instance through the CLI
+    * Secondary Indexing
+        * MongoDB allows you to index on any field
+        * Drawbacks: the more indices you have, the slower writes become (in exchange for faster reads)
+            * Generally, the read boost is way bigger than the write penalty. It's good to have multiple indices, so longa s you make sure that all of them are actually useful
+
 
 # Purpose of this document
 
