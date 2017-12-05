@@ -25,8 +25,8 @@ subtract mean, divide standard deviation
 	* to make sure there is no relation between the two
 
 ##### Measuring Performance
-	* R^2
-	* RMSE	(requires testing data)
+* R^2
+* RMSE	(requires testing data)
 
 ##### Survival Analysis	(subcategory of regression)
 * how long until something happens
@@ -65,7 +65,9 @@ subtract mean, divide standard deviation
 	* Precision/Recall	(requires test set)
 
 ### Tools
+
 as a data scientist, don't be afraid to switch language or software according to your needs
+
 * R
 * Python
 * Excel

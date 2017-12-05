@@ -18,7 +18,7 @@
 #### Dichotomous Correlations
 * one of the two variables is binary
 * 2 Categories:
-	1. point-biserial correlation - dichotomy is discrete (pregnant or not)
+	1. point-biserial correlation - dichotomy is discrete (ex: pregnant or not)
 		* this is the same as Pearson's Correlation Coefficient r
 	2. biserial correlation - dichotomy has underlying continuous distribution (passing vs failing exam)
 		* `biserial correlation = r * sqrt(pq)/ y`
@@ -80,7 +80,7 @@
 
 # Regression
 * prior to creating regression models, it's a good idea to...
-	* identify outliers and influential points, and perhaps exclude them **if** *they can be determined to be data entry errors or from a different population than the rest of the sample*
+	* identify outliers and influential points, and perhaps exclude them **if** *they can be determined to be data entry errors or from a different population than the rest of the sample
 	* transform data to create linear relations that satisfy regression assumptions
 * remember - if you have multiple models that seem equally valid but give different conclusions, then your data is insufficient to answer your question unambiguously
 * the significance of individual predictors can be measured via T-test
@@ -169,7 +169,7 @@
 			* `vif(model)`
 	* the variance of the predicted variable should be constant w.r.t. the predictor variables
 	* if multicollinearity exists, you should omit one of the variables
-* Errors are Normally Distributed, Independent, and have Homoscedasity
+* Errors are Normally Distributed, Independent, and have Homoscedasticity
 	* No Autocorrelation = the errors of one observation should not influence the errors of the next observation
 	* test this assumption with the Durbin-Watson Test (test stat = 2 means no correlation, 0 means positive, 4 means negative)
 		* order matters - you must keep the data in the original order for Durbin-Watson to be useful
@@ -271,8 +271,7 @@
 	* choose one of them to be the "baseline" via `relevel()`
 	* for each non-baseline category, compare its probability to that of the baseline with Binomial Logistic Regression
 * `mlogit` from the mlogit package
-	* to use this, you must reformat your data using `newDF <- mlogit.data(oldDF, choice = "output variable", shape
-= "wide")`
+	* to use this, you must reformat your data using `newDF <- mlogit.data(oldDF, choice = "output variable", shape = "wide")`
 * like with Binomial Logistic Regression, use p-values from `summary()` to determine the significance of predictors. Use the odds ratio via `exp(model$coefficients))` to determine the unit change in odds
 
 ## Other Regression Types

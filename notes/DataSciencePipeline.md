@@ -1,6 +1,6 @@
 * Relational Databases
     * Why use SQL instead of NoSQL?
-        * Enforcement of ACID (Atomicity, Consistency, Isolation, ) on database transactions
+        * Enforcement of ACID (Atomicity, Consistency, Isolation, Durability) on database transactions
         * Easy-to-understand relational model
         * Powerful JOIN clause allows for operations over many combinations of large sets of data
     * Why use NoSQL instead of Relational?
@@ -126,7 +126,7 @@
 * Properties
     * highly-scalable and redundant, ensuring high availability by detecting + handling failures
     * files are broken into blocks are replicated across multiple nodes
-    * foptimized for write-once, read-many applications
+    * optimized for write-once, read-many applications
 * Resource management and job scheduling is handled by [Yarn](https://hortonworks.com/apache/yarn/), the "central platform" for consistency, security, and data governance in Hadoop
 * HDFS Architecture
     * Name Node AKA Master Node
@@ -168,7 +168,6 @@
     * stateless - information is discarded after an operation is performed
     * data distribution and task parallelization are hidden from the user
     * batch-oriented - bandwidth matters more than latency
-    * failures are expected
     * consistency is more important than availability - if a node goes down, the system will slow down
 * Phases:
     * Map: apply a function that modifies all pairs and writes them to memory
@@ -222,7 +221,7 @@
             * they use SparkSQL's "Catalyst" optimizer, making them more space and time efficient than RDDs (though at the sacrifice of not having access to lower-level operations)
             * [this page](https://databricks.com/blog/2015/02/17/introducing-dataframes-in-spark-for-large-scale-data-science.html) has some examples on how to use DataFrame operations
         * the rows of DataFrames are untyped, while the rows of Datasets are strongly-typed
-            * note that Python and R can only use DataFrames, while Java can only use Datasets; Scala can ue both
+            * note that Python and R can only use DataFrames, while Java can only use Datasets; Scala can use both
     * RDDs, DataFrames, and Datasets can be converted to each other easily
 * 2 Types of Shared Variables - in order to allow data to be used by all nodes with minimal performance penalties, we impose some usage limitations
     * Broadcast Variables: read-only variable, cached on each node
@@ -293,9 +292,6 @@
 
 # Data Infrastructure
 
-* Structured vs Unstructured Data??????
-    * Structured: SQL
-    * Unstructured: ????
 * Small data: 
     * HOW BIG IS SMALL DATA????
 * Regular batched (not real-time) ETL operations and big data analytics: Hadoop
