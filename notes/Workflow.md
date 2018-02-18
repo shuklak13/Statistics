@@ -1,17 +1,17 @@
 # Types of Analysis
-	* Descriptive
-		* summarize and present a body of data without drawing any conclusions from it (Ex: the US census)
-		* this can be useful if you are, for example, publishing a dataset for consumption by the larger analytics community
-	* Exploratory
-		* discover trends in existing data
-		* note that these trends are only proposed, not confirmed; further research would need to be done to confirm the significance of these discoveries
-		* this is sometimes a step in performing one of the analyses below
-	* Inferential
-		* confirm or deny some proposition (Ex: most scientific research articless)
-	* Predictive
-		* create a model that can predict the value of some variables given other variables (Ex: recommendation engines)
-	* Causal
-		* seeks to determine what happens to one variable when another variable is modified (Ex: clinical experiments)
+* Descriptive
+	* summarize and present a body of data without drawing any conclusions from it (Ex: the US census)
+	* this can be useful if you are, for example, publishing a dataset for consumption by the larger analytics community
+* Exploratory
+	* discover trends in existing data
+	* note that these trends are only proposed, not confirmed; further research would need to be done to confirm the significance of these discoveries
+	* this is sometimes a step in performing one of the analyses below
+* Inferential
+	* confirm or deny some proposition (Ex: most scientific research articless)
+* Predictive
+	* create a model that can predict the value of some variables given other variables (Ex: recommendation engines)
+* Causal
+	* seeks to determine what happens to one variable when another variable is modified (Ex: clinical experiments)
 
 # Workflow
 1) Define a question and an experiment before you look at data.
