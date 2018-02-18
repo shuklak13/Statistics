@@ -2,9 +2,9 @@
 
 1. Normality
 	* you might have to check the normality of error terms or independent variables
-2. Homogeneous Variance
+2. Homoscedasticity / Homogeneous Variance
 	* make sure that, for each independent variable x, the y-value's variance is constant across all values of x
-3. Independence
+3. Independence (No Multicollinearity or Autocorrelation)
 	* one y-val doesn't influence another y-val
 	* an example of where this assumption would be violated is a Time Series like temperature, sales, or stock market performance
 4. Data is Clean and Standardized
@@ -69,5 +69,5 @@
 		In the end the best way is to experiment and see what gives the optimal results for your use case
 
 ## Bootstrap
-	use the sample as the sampling distribution, and take many subsamples from the sample
-	can be helpful if you have insufficient data to derive meaningful statistics
+* use the sample as the sampling distribution, and take many subsamples from the sample
+* can be helpful if you have insufficient data to derive meaningful statistics
