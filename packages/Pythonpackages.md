@@ -10,3 +10,8 @@
 	* statistical models and tests
 * [matplotlib](https://matplotlib.org/)
 	* ggplot2 for Pythonistas
+* [textblob](http://textblob.readthedocs.io/en)
+	* easy text processing
+* [Dask](http://dask.pydata.org/en/latest/)
+	* provides scalability to Pandas DataFrames, NumPy Arrays, Iterators, PySpark, and loops with an easy Pythonic interface
+	* extends size of convenient datasets from "fits in memory" to "fits on disk"

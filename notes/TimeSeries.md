@@ -8,10 +8,11 @@
 
 # Stationary Series AKA Covariance-Stationary
 * Definition: a stochastic process whose distribution is independent of time
-* 3 Criterion
+* 2 Criterion
     1. Constant Mean
     2. Homoscedasticity (constant variance)
     3. Constant Autocorrelation (covariance of x(i) and x(i+m) is constant with respect to i)
+        * by extension, Homoscedasticity (when m=0, cov(x(i), x(i+0)) = var(x(i)), so Constant Autocorrelation means x's variance is constant)
         * you can check autocorrelation with R's `acf()` and `acf.plot()`
 * Gaussian White Noise: simplest stationary series - normal distribution with mean 0 with variance independent of time
 * Most time series models assume that series are stationary.
